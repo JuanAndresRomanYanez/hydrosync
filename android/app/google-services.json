@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "316511574032",
+    "firebase_url": "https://iot-hidroponia-6a32a-default-rtdb.firebaseio.com",
+    "project_id": "iot-hidroponia-6a32a",
+    "storage_bucket": "iot-hidroponia-6a32a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316511574032:android:e97772bf0c9a36f9741295",
+        "android_client_info": {
+          "package_name": "com.example.hydrosync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFycWLqtcZSkBfZuTYssuJcim5rxllOFs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
