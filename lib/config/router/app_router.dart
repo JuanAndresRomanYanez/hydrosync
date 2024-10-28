@@ -28,6 +28,28 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'details', // Ruta secundaria
                   builder: (context, state) => const GreenhousesDetailsView(),
+                  routes: [
+                    GoRoute(
+                      path: 'crops', // Ruta secundaria
+                      builder: (context, state) => const CropsView(),
+                    ),
+
+                    GoRoute(
+                      path: 'sensors', // Ruta secundaria
+                      builder: (context, state) => const SensorsView(),
+                    ),
+
+                    GoRoute(
+                      path: 'controls', // Ruta secundaria
+                      builder: (context, state) => const ControlsView(),
+                    ),
+
+                    GoRoute(
+                      path: 'configuration', // Ruta secundaria
+                      builder: (context, state) => const GreenhouseConfigurationView(),
+                    ),
+
+                  ],
                 ),
               ],
             ),

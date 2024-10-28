@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:hydrosync/presentation/widgets/widgets.dart';
+import '../../widgets/widgets.dart';
 
-class CropsView extends StatelessWidget {
-  const CropsView({super.key});
+class GreenhouseConfigurationView extends StatelessWidget {
+  const GreenhouseConfigurationView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: const Text('CULTIVOS'),
+        title: const Text('CONFIGURACIÓN'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
