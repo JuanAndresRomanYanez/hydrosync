@@ -31,12 +31,12 @@ final appRouter = GoRouter(
                   routes: [
                     GoRoute(
                       path: 'crops', // Ruta secundaria
-                      builder: (context, state) => const CropsView(),
+                      builder: (context, state) => CropsView(),
                     ),
 
                     GoRoute(
                       path: 'sensors', // Ruta secundaria
-                      builder: (context, state) => const SensorsView(),
+                      builder: (context, state) => SensorsView(),
                     ),
 
                     GoRoute(

@@ -1,10 +1,16 @@
+import 'entities.dart';
+
 class Greenhouse {
-  final String name;
-  final String description;
+  final List<Crop> crops;
+  final Details details;
+  final List<Sensor> sensors;
+  final List<Control> controls;
 
   Greenhouse({
-    required this.name, 
-    required this.description
+    required this.crops, 
+    required this.details,
+    required this.sensors,
+    required this.controls,
   });
 
 }

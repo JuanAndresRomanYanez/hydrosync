@@ -25,7 +25,7 @@ class GreenhouseOptionButton extends StatelessWidget {
           backgroundColor: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(45.0),
-            side: const BorderSide(color: Colors.black, width: 2.0), // Aquí defines el borde
+            side: const BorderSide(color: Colors.black, width: 2.0), 
           ),
         ),
         child: Text(

@@ -1,10 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-class GreenhouseData extends StatelessWidget {
-  final DatabaseReference _invernaderoRef = FirebaseDatabase.instance.ref().child('greenhouses/greenhouse_1/sensors');
+class GreenhouseDataDetails extends StatelessWidget {
+  final DatabaseReference _invernaderoRef =
+      FirebaseDatabase.instance.ref().child('greenhouses/greenhouse_1/details');
 
-  GreenhouseData({super.key});
+  GreenhouseDataDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +32,16 @@ class GreenhouseData extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     const TextSpan(
-                      text: 'Temperatura: ',
+                      text: 'Nombre: ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
-                        fontSize: 30,
+                        fontSize: 24,
                       ),
                     ),
                     TextSpan(
-                      text: '${data?['temperature']['value'] ?? 'N/A'} °C',
-                      style: const TextStyle(color: Colors.black, fontSize: 30),
+                      text: '${data?['name'] ?? 'N/A'}',
+                      style: const TextStyle(color: Colors.black, fontSize: 24),
                     ),
                   ],
                 ),
@@ -50,16 +51,16 @@ class GreenhouseData extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     const TextSpan(
-                      text: 'Humedad: ',
+                      text: 'Ubicación: ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
-                        fontSize: 30,
+                        fontSize: 24,
                       ),
                     ),
                     TextSpan(
-                      text: '${data?['humidity']['value'] ?? 'N/A'} %',
-                      style: const TextStyle(color: Colors.black, fontSize: 30),
+                      text: '${data?['location'] ?? 'N/A'}',
+                      style: const TextStyle(color: Colors.black, fontSize: 24),
                     ),
                   ],
                 ),
@@ -69,20 +70,41 @@ class GreenhouseData extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     const TextSpan(
-                      text: 'Distancia: ',
+                      text: 'Tamaño: ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
-                        fontSize: 30,
+                        fontSize: 24,
                       ),
                     ),
                     TextSpan(
-                      text: '${data?['waterLevel']['value'] ?? 'N/A'} cm',
-                      style: const TextStyle(color: Colors.black, fontSize: 30),
+                      text: '${data?['size'] ?? 'N/A'} m^2',
+                      style: const TextStyle(color: Colors.black, fontSize: 24),
                     ),
                   ],
                 ),
               ),
+
+              const SizedBox(height: 8),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'Estado: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 24,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '${data?['status'] ?? 'N/A'}',
+                      style: const TextStyle(color: Colors.black, fontSize: 24),
+                    ),
+                  ],
+                ),
+              ),
+
             ],
           ),
         );

@@ -28,22 +28,28 @@ class GreenhouseCard extends StatelessWidget {
                   child: Text(
                     'INVERNADERO 1',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
 
+                // Image.asset(
+                //   'assets/images/crops/lechuga.png',
+                //   height: 200,
+                //   width: double.infinity,
+                // ),
+
                 // Sliver (Icono o Imagen)
-                const Icon(
-                  Icons.image,
-                  size: 60,
-                  color: Colors.blueAccent,
-                ),
+                // const Icon(
+                //   Icons.image,
+                //   size: 60,
+                //   color: Colors.blueAccent,
+                // ),
                 const SizedBox(height: 10),
 
-                GreenhouseData(),
+                GreenhouseDataDetails(),
 
                 // Botón
                 Align(
@@ -56,6 +62,7 @@ class GreenhouseCard extends StatelessWidget {
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(45.0),
+                        side: const BorderSide(color: Colors.black, width: 2.0),
                       ),
                     ),
                     child: const Text('Ver más', style: TextStyle(color: Colors.black),),

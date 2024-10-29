@@ -18,7 +18,7 @@ class GreenhousesView extends StatelessWidget {
         // Aqui debo poner la lista de invernaderos luego
         child: ListView(
           
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 30),
           children: const [
             GreenhouseCard(),
             SizedBox(height: 20,),

@@ -16,19 +16,19 @@ class GreenhouseOptions extends StatelessWidget {
             color: Color(0xFFB2DFDB),
             route: '/greenhouses/details/crops',
           ),
-          SizedBox(height: 80),
+          SizedBox(height: 70),
           GreenhouseOptionButton(
             label: 'SENSORES',
             color: Color(0xFFBBDEFB),
             route: '/greenhouses/details/sensors',
           ),
-          SizedBox(height: 80),
+          SizedBox(height: 70),
           GreenhouseOptionButton(
             label: 'CONTROLES',
             color: Color(0xFFFFF9C4),
             route: '/greenhouses/details/controls',
           ),
-          SizedBox(height: 80),
+          SizedBox(height: 70),
           GreenhouseOptionButton(
             label: 'CONFIGURACIÓN',
             color: Color(0xFFE1BEE7),
