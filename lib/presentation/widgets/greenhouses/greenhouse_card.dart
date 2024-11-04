@@ -1,14 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hydrosync/domain/entities/greenhouse.dart';
+import 'dart:async';
 
-class GreenhouseCard extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:hydrosync/domain/entities/greenhouse.dart';
+import 'package:hydrosync/presentation/widgets/widgets.dart';
+
+class GreenhouseCard extends ConsumerWidget {
   final Greenhouse greenhouse;
 
-  const GreenhouseCard({super.key, required this.greenhouse});
+  const GreenhouseCard({
+    super.key, 
+    required this.greenhouse
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       color: const Color(0xFF45C4DD),
       shape: RoundedRectangleBorder(
@@ -25,100 +33,158 @@ class GreenhouseCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Center(
               child: Text(
                 greenhouse.details.name,
+                textAlign: TextAlign.center, // Centrar el texto
                 style: const TextStyle(
-                  fontSize: 25,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
             ),
+
             const SizedBox(height: 20), // Espacio entre el título y la información
-            const Text(
-              'Ubicación: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+            
+            // Carrusel de imágenes
+             // Carrusel de imágenes con desplazamiento automático
+            if (greenhouse.crops.isNotEmpty)
+              AutoScrollImageCarousel(
+                imagePaths: greenhouse.crops.map((crop) => crop.image).toList(),
               ),
+
+            const SizedBox(height: 20,),
+            // Uso de `InformativeDataRow` para mostrar cada dato
+            InformativeDataRow(
+              label: 'Ubicación', 
+              value: greenhouse.details.location
             ),
-            Text(
-              greenhouse.details.location,
-              style: const TextStyle(fontSize: 16),
+            InformativeDataRow(
+              label: 'Tamaño', 
+              value: greenhouse.details.size
             ),
-            const SizedBox(height: 10), // Espacio entre la ubicación y el tamaño
-            const Text(
-              'Tamaño: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+            InformativeDataRow(
+              label: 'Estado', 
+              value: greenhouse.details.status
             ),
-            Text(
-              greenhouse.details.size.toString(), // Asegúrate de que size sea un String
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 10), // Espacio entre el tamaño y el estado
-            const Text(
-              'Estado: ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            Text(
-              greenhouse.details.status,
-              style: const TextStyle(fontSize: 16),
-            ),
+
             const SizedBox(height: 20), // Espacio antes de los botones
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
+                ActionButton(
+                  label: 'Ver más',
+                  icon: Icons.visibility,
+                  color: Colors.green,
                   onPressed: () {
                     context.push(
                       '/greenhouses/details',
                       extra: greenhouse,
                     );
                   },
-                  icon: const Icon(Icons.visibility, color: Colors.black),
-                  label: const Text(
-                    'Ver más',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(45.0),
-                      side: const BorderSide(color: Colors.black, width: 2.0),
-                    ),
-                  ),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton.icon(
+                const SizedBox(width: 30),
+                ActionButton(
+                  label: 'Editar',
+                  icon: Icons.edit,
+                  color: Colors.orange,
                   onPressed: () {
                     context.push(
                       '/greenhouses/edit',
                       extra: greenhouse,
                     );
                   },
-                  icon: const Icon(Icons.edit, color: Colors.black),
-                  label: const Text(
-                    'Editar',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(45.0),
-                      side: const BorderSide(color: Colors.black, width: 2.0),
-                    ),
-                  ),
                 ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+class AutoScrollImageCarousel extends StatefulWidget {
+  final List<String> imagePaths;
+
+  const AutoScrollImageCarousel({
+    super.key,
+    required this.imagePaths,
+  });
+
+  @override
+  AutoScrollImageCarouselState createState() => AutoScrollImageCarouselState();
+}
+
+class AutoScrollImageCarouselState extends State<AutoScrollImageCarousel> {
+  late PageController _pageController;
+  late Timer _timer;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.8); // Ajuste para dar efecto de carrusel.
+
+    // Iniciar el temporizador para desplazar las páginas automáticamente
+    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      if (_currentPage < widget.imagePaths.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: PageView.builder(
+        controller: _pageController,
+        itemCount: widget.imagePaths.length,
+        itemBuilder: (context, index) {
+          return AnimatedBuilder(
+            animation: _pageController,
+            builder: (context, child) {
+              double value = 1.0;
+              if (_pageController.position.haveDimensions) {
+                value = _pageController.page! - index;
+                value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
+              }
+              return Center(
+                child: SizedBox(
+                  height: Curves.easeIn.transform(value) * 200,
+                  width: Curves.easeIn.transform(value) * 300,
+                  child: child,
+                ),
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15.0),
+              child: Image.asset(
+                widget.imagePaths[index],
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

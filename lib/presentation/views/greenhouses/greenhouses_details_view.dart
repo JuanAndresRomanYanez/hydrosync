@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:hydrosync/presentation/widgets/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hydrosync/domain/entities/entities.dart';
+// import 'package:hydrosync/presentation/widgets/widgets.dart';
 
-class GreenhousesDetailsView extends StatelessWidget {
-  const GreenhousesDetailsView({super.key});
+class GreenhousesDetailsView extends ConsumerWidget {
+  final String greenhouse;
+
+  const GreenhousesDetailsView({
+    super.key, 
+    required this.greenhouse,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -17,7 +24,8 @@ class GreenhousesDetailsView extends StatelessWidget {
           )
         ),
       ),
-      body: const GreenhouseOptions(),
+      body: const Placeholder(),
+      // body: const GreenhouseOptions(),
     );
   }
 }

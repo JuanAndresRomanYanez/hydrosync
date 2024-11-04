@@ -1,5 +1,7 @@
 export 'shared/custom_bottom_navigation.dart';
 export 'shared/custom_drawer.dart';
+export 'shared/informative_data_row.dart';
+export 'shared/action_button.dart';
 
 export 'greenhouses/greenhouse_data.dart';
 export 'greenhouses/greenhouse_card.dart';

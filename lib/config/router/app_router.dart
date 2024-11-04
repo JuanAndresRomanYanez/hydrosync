@@ -1,5 +1,6 @@
 // import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hydrosync/domain/entities/entities.dart';
 import 'package:hydrosync/presentation/screens/screens.dart';
 import 'package:hydrosync/presentation/views/views.dart';
 
@@ -9,6 +10,7 @@ final appRouter = GoRouter(
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => HomeScreen(currentChild: navigationShell),
       branches: <StatefulShellBranch>[
+        
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -28,7 +30,10 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'details', // Ruta secundaria
-                  builder: (context, state) => const GreenhousesDetailsView(),
+                  builder: (context, state){
+                    final greenhouse = state.extra! as String;
+                    return GreenhousesDetailsView(greenhouse: greenhouse);
+                  },
                   routes: [
                     GoRoute(
                       path: 'crops', // Ruta secundaria
