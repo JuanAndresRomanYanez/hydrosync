@@ -14,7 +14,7 @@ class GreenhouseRepositoryImpl extends GreenhousesRepository{
   });
 
   @override
-  Future<List<Greenhouse>> getAllGreenhouses() {
+  Stream<List<Greenhouse>> getAllGreenhouses() {
     return datasource.getAllGreenhouses();
   }
 

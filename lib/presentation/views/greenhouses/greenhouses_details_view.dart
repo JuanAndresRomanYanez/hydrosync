@@ -9,15 +9,15 @@ class GreenhousesDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(),
+      // drawer: const CustomDrawer(),
       appBar: AppBar(
         title: const Text('DETALLES DEL INVERNADERO'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.pop(); // Regresa a la vista anterior
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     context.pop(); // Regresa a la vista anterior
+        //   },
+        // ),
       ),
       body: const GreenhouseOptions(),
     );

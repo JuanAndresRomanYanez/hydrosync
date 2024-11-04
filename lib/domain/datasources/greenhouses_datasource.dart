@@ -1,5 +1,5 @@
 import '../entities/entities.dart';
 
 abstract class GreenhousesDatasource {
-  Future<List<Greenhouse>> getAllGreenhouses();
+  Stream<List<Greenhouse>> getAllGreenhouses();
 }

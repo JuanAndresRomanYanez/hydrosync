@@ -8,9 +8,8 @@ class GreenhousesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: const Text('INVERNADEROS'),
+        title: const Center(child: Text('INVERNADEROS', style: TextStyle(fontSize: 30, ),)),
       ),
       
       body: Padding(

@@ -78,10 +78,7 @@ class SensorsView extends StatelessWidget {
                     value: sensor['value'],
                     sensorName: sensor['name'],
                     onButtonPressed: () {
-                      // Aquí podrías definir la acción del botón, por ejemplo, navegar a más detalles
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Detalles de ${sensor['name']}')),
-                      );
+                      context.push('/greenhouses/details/sensors/details');
                     },
                   ),
                 );

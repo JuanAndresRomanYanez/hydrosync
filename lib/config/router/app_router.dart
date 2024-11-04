@@ -1,3 +1,4 @@
+// import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hydrosync/presentation/screens/screens.dart';
 import 'package:hydrosync/presentation/views/views.dart';
@@ -37,6 +38,12 @@ final appRouter = GoRouter(
                     GoRoute(
                       path: 'sensors', // Ruta secundaria
                       builder: (context, state) => SensorsView(),
+                      routes: [
+                        GoRoute(
+                          path: 'details',
+                          builder: (context, state) => SensorsDetailsView(),
+                        ),
+                      ],
                     ),
 
                     GoRoute(
@@ -50,6 +57,12 @@ final appRouter = GoRouter(
                     ),
 
                   ],
+                ),
+
+
+                GoRoute(
+                  path: 'edit', // Ruta secundaria
+                  builder: (context, state) => const GreenhousesEditView(),
                 ),
               ],
             ),
