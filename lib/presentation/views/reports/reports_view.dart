@@ -7,9 +7,15 @@ class ReportsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: const Text('REPORTES'),
+        title: const Center(
+          child: Text(
+            'REPORTES', 
+            style: TextStyle(
+              fontSize: 30,
+            ),
+          )
+        ),
       ),
       body: const Placeholder(),
     );

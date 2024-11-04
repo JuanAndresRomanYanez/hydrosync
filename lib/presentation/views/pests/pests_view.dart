@@ -12,9 +12,15 @@ class PestsView extends ConsumerWidget {
     // final greenhouses = ref.watch(greenhouseRepositoryProvider).getAllGreenhouses;
 
     return Scaffold(
-      drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: const Text('PLAGAS'),
+        title: const Center(
+          child: Text(
+            'PLAGAS', 
+            style: TextStyle(
+              fontSize: 30,
+            ),
+          )
+        ),
       ),
       body: const Placeholder(),
     );

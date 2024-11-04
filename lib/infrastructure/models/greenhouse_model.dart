@@ -16,15 +16,20 @@ class GreenhouseModel {
 
   factory GreenhouseModel.fromJson(Map<String, dynamic> json) {
     return GreenhouseModel(
-      crops: (json['crops'] as List)
-          .map((crop) => CropModel.fromJson(crop))
+      // Convierte el mapa 'crops' en una lista de CropModel
+      crops: (json['crops'] as Map<dynamic, dynamic>).values
+          .map((crop) => CropModel.fromJson(Map<String, dynamic>.from(crop)))
           .toList(),
-      details: DetailsModel.fromJson(json['details']),
-      sensors: (json['sensors'] as List)
-          .map((sensor) => SensorModel.fromJson(sensor))
+      details: DetailsModel.fromJson(Map<String, dynamic>.from(json['details'])),
+      
+      // Convierte el mapa 'sensors' en una lista de SensorModel
+      sensors: (json['sensors'] as Map<dynamic, dynamic>).values
+          .map((sensor) => SensorModel.fromJson(Map<String, dynamic>.from(sensor)))
           .toList(),
-      controls: (json['controls'] as List)
-          .map((control) => ControlModel.fromJson(control))
+      
+      // Convierte el mapa 'controls' en una lista de ControlModel
+      controls: (json['controls'] as Map<dynamic, dynamic>).values
+          .map((control) => ControlModel.fromJson(Map<String, dynamic>.from(control)))
           .toList(),
     );
   }

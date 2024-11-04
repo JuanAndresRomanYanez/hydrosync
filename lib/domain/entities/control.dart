@@ -1,6 +1,6 @@
 
 class Control {
-  final int time;
+  final double time;
   final String method;
   final bool status;
 

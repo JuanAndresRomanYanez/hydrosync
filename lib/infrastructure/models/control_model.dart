@@ -1,7 +1,7 @@
 import 'package:hydrosync/domain/entities/entities.dart';
 
 class ControlModel {
-  final int time;
+  final double time;
   final String method;
   final bool status;
 
@@ -31,9 +31,9 @@ class ControlModel {
 
   factory ControlModel.fromJson(Map<String, dynamic> json) {
     return ControlModel(
-      time: json['time'] ?? '',
+      time: (json['time']).toDouble() ?? 0,
       method: json['method'] ?? '',
-      status: json['status'] ?? '',
+      status: json['status'] ?? false,
     );
   }
 }

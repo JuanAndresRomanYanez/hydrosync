@@ -1,9 +1,9 @@
 class Sensor {
   final String name;
-  final int value;
-  final int maxValue;
-  final int minValue;
-  final int updateFrequency;
+  final double value;
+  final double maxValue;
+  final double minValue;
+  final double updateFrequency;
   final String image;
 
   Sensor({

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
@@ -9,7 +8,14 @@ class DashboardView extends StatelessWidget {
     return Scaffold(
       // drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: const Text('DASHBOARD'),
+        title: const Center(
+          child: Text(
+            'DASHBOARD', 
+            style: TextStyle(
+              fontSize: 30,
+            ),
+          )
+        ),
       ),
       body: const Placeholder(),
     );

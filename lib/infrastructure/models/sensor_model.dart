@@ -3,10 +3,10 @@ import 'package:hydrosync/domain/entities/entities.dart';
 class SensorModel {
   final String name;
   final String image;
-  final int maxValue;
-  final int minValue;
-  final int updateFrequency;
-  final int value;
+  final double maxValue;
+  final double minValue;
+  final double updateFrequency;
+  final double value;
 
   SensorModel({
     required this.name,
@@ -43,10 +43,10 @@ class SensorModel {
     return SensorModel(
       name: json['name'] ?? '',
       image: json['image'] ?? '',
-      maxValue: json['maxValue'] ?? 0,
-      minValue: json['minValue'] ?? 0,
-      updateFrequency: json['updateFrequency'] ?? 0,
-      value: json['value'] ?? 0,
+      maxValue: (json['maxValue']).toDouble() ?? 0,
+      minValue: (json['minValue']).toDouble() ?? 0,
+      updateFrequency: (json['updateFrequency']).toDouble() ?? 0,
+      value: (json['value']).toDouble() ?? 0,
     );
   }
 }
