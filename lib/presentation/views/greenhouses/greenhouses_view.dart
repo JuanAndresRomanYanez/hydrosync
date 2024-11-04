@@ -13,14 +13,12 @@ class GreenhousesView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'INVERNADEROS',
-            style: TextStyle(
+        title: const Text(
+          'INVERNADEROS', 
+          style: TextStyle(
               fontSize: 30,
             ),
           ),
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
