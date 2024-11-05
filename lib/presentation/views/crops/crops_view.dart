@@ -1,90 +1,64 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hydrosync/presentation/providers/providers.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
-class CropsView extends StatelessWidget {
+class CropsView extends ConsumerWidget {
   final int id;
 
-  final DatabaseReference _cropsRef = FirebaseDatabase.instance.ref().child('greenhouses/greenhouse_1/crops');
-
-  CropsView({
+  const CropsView({
     super.key,
     required this.id,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final greenhousesAsyncValue = ref.watch(greenhousesStreamProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('CULTIVOS'),
       ),
-      body: StreamBuilder<DatabaseEvent>(
-        stream: _cropsRef.onValue,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }
-
-          // Obtenemos los datos del snapshot
-          final dataSnapshot = snapshot.data?.snapshot.value as Map?;
-          final data = dataSnapshot?.cast<String, dynamic>();
-
-          // Validamos si los datos existen
-          if (data == null) {
-            return const Center(child: Text("No hay datos disponibles."));
-          }
-
-          // Lista de datos de cultivos para pasar a las tarjetas
-          final List<Map<String, dynamic>> cropsData = data.entries.map((entry) {
-            final crop = entry.value;
-
-            // Verifica si 'crop' es de tipo Map
-            if (crop is Map) {
-              return {
-                'name': crop['name'] ?? 'Nombre desconocido',
-                'description': crop['description'] ?? 'Sin descripción',
-                'image': crop['image'] ?? 'assets/images/crops/default.png', // Imagen por defecto
-              };
-            } else {
-              // Manejo de error en caso de que la entrada no sea un mapa
-              return {
-                'name': 'Nombre desconocido',
-                'description': 'Sin descripción',
-                'image': 'assets/images/crops/default.png',
-              };
-            }
-          }).toList();
-
-          return Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: ListView.builder(
-              itemCount: cropsData.length,
-              itemBuilder: (context, index) {
-                final crop = cropsData[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: CropCard(
-                    imageUrl: crop['image'],
-                    description: crop['description'],
-                    cropName: crop['name'],
-                    onButtonPressed: () {
-                      // Acción del botón, muestra un mensaje temporal en este caso
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Detalles de ${crop['name']}')),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
+      body: greenhousesAsyncValue.when(
+        data: (greenhouses) {
+          // Buscar el invernadero por id
+          final greenhouse = greenhouses.firstWhere(
+            (g) => g.details.id == id,
           );
+
+          // Accedemos a los cultivos del invernadero
+          final crops = greenhouse.crops;
+
+          // Verificamos si hay cultivos
+          if (crops.isEmpty) {
+            return const Center(child: Text('No hay cultivos disponibles.'));
+          }
+
+          // Mostrar la lista de cultivos
+          return ListView.builder(
+            padding: const EdgeInsets.only(bottom: 16.0), // Agrega un padding inferior si lo deseas
+            itemCount: crops.length,
+            itemBuilder: (context, index) {
+              final crop = crops[index];
+              return CropCard(
+                imageUrl: crop.image,
+                description: crop.description,
+                cropName: crop.name,
+                onButtonPressed: () {
+                  // Acción al presionar la tarjeta
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Detalles de ${crop.name}')),
+                  );
+                },
+              );
+            },
+          );
+
         },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
       ),
     );
   }
+
 }

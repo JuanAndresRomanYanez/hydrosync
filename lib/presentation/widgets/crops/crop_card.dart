@@ -16,84 +16,76 @@ class CropCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFBBDEFB), // Fondo azul claro
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 4, // Sombra para la tarjeta
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
-        border: Border.all(
-          color: const Color(0xFF1976D2), // Borde azul oscuro
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            blurRadius: 6,
-            offset: const Offset(0, 3), // Sombra sutil
-          ),
-        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      child: InkWell(
+        onTap: onButtonPressed,
+        borderRadius: BorderRadius.circular(15.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Nombre del cultivo
-            Text(
-              cropName,
-              style: const TextStyle(
-                fontSize: 35,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+            // Imagen con nombre del cultivo superpuesto
+            Stack(
+              children: [
+                // Imagen del cultivo
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
+                  child: Image.asset(
+                    imageUrl,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                // Degradado para mejorar la legibilidad del texto
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
+                      gradient: LinearGradient(
+                        colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                  ),
+                ),
+                // Nombre del cultivo
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: Text(
+                    cropName,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        const Shadow(
+                          blurRadius: 10.0,
+                          color: Colors.black54,
+                          offset: Offset(2.0, 2.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-
-            // Imagen del cultivo
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.asset(
-                imageUrl,
-                width: 160,
-                height: 160,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 10),
-
             // Descripción del cultivo
-            Text(
-              description,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.black54,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                description,
+                style: theme.textTheme.bodyMedium, // Utiliza el estilo del tema
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
-
-            // Botón para ver más detalles
-            // SizedBox(
-            //   width: double.infinity,
-            //   child: ElevatedButton(
-            //     onPressed: onButtonPressed,
-            //     style: ElevatedButton.styleFrom(
-            //       padding: const EdgeInsets.symmetric(vertical: 12.0),
-            //       backgroundColor: Colors.deepOrangeAccent,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(12.0),
-            //       ),
-            //     ),
-            //     child: const Text(
-            //       'Más detalles',
-            //       style: TextStyle(
-            //         fontSize: 18,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.white,
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
