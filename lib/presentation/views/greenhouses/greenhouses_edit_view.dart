@@ -6,12 +6,12 @@ import 'package:hydrosync/presentation/widgets/widgets.dart';
 import '../../../domain/entities/entities.dart';
 
 class GreenhousesEditView extends ConsumerStatefulWidget {
-  final int extra;
+  final int id;
 
   const GreenhousesEditView({
-    Key? key,
-    required this.extra,
-  }) : super(key: key);
+    super.key,
+    required this.id,
+  });
 
   @override
   GreenhousesEditViewState createState() => GreenhousesEditViewState();
@@ -52,7 +52,7 @@ class GreenhousesEditViewState extends ConsumerState<GreenhousesEditView> {
       body: greenhousesAsyncValue.when(
         data: (greenhouses) {
           final greenhouse = greenhouses.firstWhere(
-            (g) => g.details.id == widget.extra,
+            (g) => g.details.id == widget.id,
           );
 
           if (!isInitialized) {

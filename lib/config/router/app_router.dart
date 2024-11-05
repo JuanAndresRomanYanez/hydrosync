@@ -31,28 +31,46 @@ final appRouter = GoRouter(
                   path: 'details', // Ruta secundaria
                   builder: (context, state) {
                     final extra = state.extra as int?; // Accediendo al extra
-                    return GreenhousesDetailsView(extra: extra ?? 0); // Pasar el parámetro al siguiente widget
+                    return GreenhousesDetailsView(id: extra ?? 0); // Pasar el parámetro al siguiente widget
                   },
                   routes: [
                     GoRoute(
                       path: 'crops', // Ruta secundaria
-                      builder: (context, state) => CropsView(),
+                      builder: (context, state){
+                        final extra = state.extra as int?;
+                        return CropsView(id: extra ?? 0);
+                      }
                     ),
 
                     GoRoute(
                       path: 'sensors', // Ruta secundaria
-                      builder: (context, state) => SensorsView(),
+                      builder: (context, state){
+                        final extra = state.extra as int?;
+                        return SensorsView(id: extra ?? 0);
+                      },
                       routes: [
                         GoRoute(
                           path: 'details',
-                          builder: (context, state) => SensorsDetailsView(),
+                          builder: (context, state) {
+                            final extra = state.extra as Map<String, dynamic>?;
+                            final greenhouseId = extra?['greenhouseId'] as int?;
+                            final sensorId = extra?['sensorId'] as String?;
+
+                            return SensorsDetailsView(
+                              greenhouseId: greenhouseId ?? 0,
+                              sensorId: sensorId ?? '',
+                            );
+                          },
                         ),
                       ],
                     ),
 
                     GoRoute(
                       path: 'controls', // Ruta secundaria
-                      builder: (context, state) => const ControlsView(),
+                      builder: (context, state){
+                        final extra = state.extra as int?;
+                        return ControlsView(id: extra ?? 0);
+                      },
                     ),
 
                   ],
@@ -63,7 +81,7 @@ final appRouter = GoRouter(
                   path: 'edit', // Ruta secundaria
                   builder: (context, state) {
                     final extra = state.extra as int?; // Accediendo al extra
-                    return GreenhousesEditView(extra: extra ?? 0); // Pasar el parámetro al siguiente widget
+                    return GreenhousesEditView(id: extra ?? 0); // Pasar el parámetro al siguiente widget
                   },
                 ),
               ],

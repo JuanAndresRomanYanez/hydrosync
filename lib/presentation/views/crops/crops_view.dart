@@ -4,22 +4,20 @@ import 'package:go_router/go_router.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 class CropsView extends StatelessWidget {
+  final int id;
+
   final DatabaseReference _cropsRef = FirebaseDatabase.instance.ref().child('greenhouses/greenhouse_1/crops');
 
-  CropsView({super.key});
+  CropsView({
+    super.key,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(),
       appBar: AppBar(
         title: const Text('CULTIVOS'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.pop(); // Regresa a la vista anterior
-          },
-        ),
       ),
       body: StreamBuilder<DatabaseEvent>(
         stream: _cropsRef.onValue,

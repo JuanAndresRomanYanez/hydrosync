@@ -2,30 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 class GreenhouseOptions extends StatelessWidget {
-  const GreenhouseOptions({super.key});
+  final int id;
+
+  const GreenhouseOptions({
+    super.key,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(16.0),
       child: ListView(
-        children: const [
-          SizedBox(height: 30),
-          GreenhouseOptionButton(
+        children: [
+          GreenhouseOptionCard(
+            id: id,
             label: 'CULTIVOS',
-            color: Color(0xFFB2DFDB),
+            imagePath: 'assets/images/more/crops.png',
             route: '/greenhouses/details/crops',
           ),
-          SizedBox(height: 70),
-          GreenhouseOptionButton(
+          const SizedBox(height: 16),
+          GreenhouseOptionCard(
+            id: id,
             label: 'SENSORES',
-            color: Color(0xFFBBDEFB),
+            imagePath: 'assets/images/more/sensors.png',
             route: '/greenhouses/details/sensors',
           ),
-          SizedBox(height: 70),
-          GreenhouseOptionButton(
+          const SizedBox(height: 16),
+          GreenhouseOptionCard(
+            id: id,
             label: 'CONTROLES',
-            color: Color(0xFFFFF9C4),
+            imagePath: 'assets/images/more/controls.png',
             route: '/greenhouses/details/controls',
           ),
         ],

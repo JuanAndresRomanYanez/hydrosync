@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hydrosync/domain/entities/greenhouse.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 class GreenhousesDetailsView extends ConsumerWidget {
-  final int extra;
+  final int id;
 
   const GreenhousesDetailsView({
     super.key, 
-    required this.extra
+    required this.id
   });
 
   @override
@@ -24,7 +23,7 @@ class GreenhousesDetailsView extends ConsumerWidget {
           ),
         ),
       ),
-      body: const GreenhouseOptions(),
+      body: GreenhouseOptions(id: id,),
     );
   }
 }

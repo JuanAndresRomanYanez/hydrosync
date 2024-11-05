@@ -1,72 +1,47 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
+import 'package:hydrosync/presentation/providers/providers.dart';
 
-class SensorsView extends StatelessWidget {
-  final DatabaseReference _invernaderoRef = FirebaseDatabase.instance.ref().child('greenhouses/greenhouse_1/sensors');
+class SensorsView extends ConsumerWidget {
+  final int id;
 
-  SensorsView({super.key});
+  const SensorsView({
+    super.key,
+    required this.id,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final greenhousesAsyncValue = ref.watch(greenhousesStreamProvider);
+
     return Scaffold(
-      drawer: const CustomDrawer(),
       appBar: AppBar(
         title: const Text('SENSORES'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            context.pop(); // Regresa a la vista anterior
-          },
-        ),
       ),
-      body: StreamBuilder<DatabaseEvent>(
-        stream: _invernaderoRef.onValue,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: greenhousesAsyncValue.when(
+        data: (greenhouses) {
+          // Buscar el invernadero por id
+          final greenhouse = greenhouses.firstWhere(
+            (g) => g.details.id == id,
+          );
 
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }
+          // Accedemos a los sensores del invernadero
+          final sensors = greenhouse.sensors;
 
-          // Obtenemos los datos del snapshot
-          final dataSnapshot = snapshot.data?.snapshot.value as Map?;
-          final data = dataSnapshot?.cast<String, dynamic>();
-
-          // Validamos si los datos existen
-          if (data == null) {
-            return const Center(child: Text("No hay datos disponibles."));
-          }
-
-          // Lista de datos de sensores para pasar a las tarjetas
-          final List<Map<String, dynamic>> sensorsData = [
-            {
-              'name': 'Temperatura',
-              'value': '${data['temperature']['value'] ?? 'N/A'} °C',
-              'image': 'assets/images/sensors/temperatura.png',
-            },
-            {
-              'name': 'Humedad',
-              'value': '${data['humidity']['value'] ?? 'N/A'} %',
-              'image': 'assets/images/sensors/humedad.png',
-            },
-            {
-              'name': 'Distancia',
-              'value': '${data['waterLevel']['value'] ?? 'N/A'} cm',
-              'image': 'assets/images/sensors/nivel_de_agua.png',
-            },
-            {
-              'name': 'Luz del ambiente',
-              'value': '${data['ambientLight']['value'] ?? 'N/A'} %',
-              'image': 'assets/images/sensors/luz_ambiente.png',
-            },
-          ];
+          // Crear la lista de datos de sensores para las tarjetas
+          final List<Map<String, dynamic>> sensorsData = sensors.map((sensor) {
+            return {
+              'id': sensor.id, // Aseguramos que 'id' esté incluido
+              'name': sensor.name,
+              'value': sensor.value,
+              'image': sensor.image,
+            };
+          }).toList();
 
           return Padding(
-            padding: const EdgeInsets.all(30.0), // Espacio alrededor de la tarjeta
+            padding: const EdgeInsets.all(30.0),
             child: ListView.builder(
               itemCount: sensorsData.length,
               itemBuilder: (context, index) {
@@ -74,11 +49,18 @@ class SensorsView extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: SensorCard(
-                    imageUrl: sensor['image'],
+                    imageUrl: sensor['image'].toString(),
                     value: sensor['value'],
-                    sensorName: sensor['name'],
+                    sensorName: sensor['name'].toString(),
+                    sensorId: sensor['id'].toString(),
                     onButtonPressed: () {
-                      context.push('/greenhouses/details/sensors/details');
+                      context.push(
+                        '/greenhouses/details/sensors/details',
+                        extra: {
+                          'greenhouseId': id,
+                          'sensorId': sensor['id'].toString(),
+                        },
+                      );
                     },
                   ),
                 );
@@ -86,6 +68,8 @@ class SensorsView extends StatelessWidget {
             ),
           );
         },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
       ),
     );
   }

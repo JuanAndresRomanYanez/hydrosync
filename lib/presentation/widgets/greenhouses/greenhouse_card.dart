@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:hydrosync/domain/entities/greenhouse.dart';
-import 'package:hydrosync/infrastructure/models/models.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 class GreenhouseCard extends ConsumerWidget {

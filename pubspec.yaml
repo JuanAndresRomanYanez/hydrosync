@@ -52,3 +52,4 @@ flutter:
     - .env
     - assets/images/crops/
     - assets/images/sensors/
+    - assets/images/more/

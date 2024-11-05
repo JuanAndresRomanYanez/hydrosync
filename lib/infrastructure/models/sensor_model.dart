@@ -1,6 +1,7 @@
 import 'package:hydrosync/domain/entities/entities.dart';
 
 class SensorModel {
+  final String id;
   final String name;
   final String image;
   final double maxValue;
@@ -9,6 +10,7 @@ class SensorModel {
   final double value;
 
   SensorModel({
+    required this.id,
     required this.name,
     required this.image,
     required this.maxValue,
@@ -19,6 +21,7 @@ class SensorModel {
 
   Sensor toEntity() {
     return Sensor(
+      id: id,
       name: name,
       image: image,
       maxValue: maxValue,
@@ -30,6 +33,7 @@ class SensorModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'image': image,
       'maxValue': maxValue,
@@ -41,6 +45,7 @@ class SensorModel {
 
   factory SensorModel.fromJson(Map<String, dynamic> json) {
     return SensorModel(
+      id: json['id'] ?? '',
       name: json['name'] ?? '',
       image: json['image'] ?? '',
       maxValue: (json['maxValue']).toDouble() ?? 0,
@@ -53,6 +58,7 @@ class SensorModel {
   // Método para crear un SensorModel desde una entidad Sensor
   factory SensorModel.fromEntity(Sensor sensor) {
     return SensorModel(
+      id: sensor.id,
       name: sensor.name,
       image: sensor.image,
       maxValue: sensor.maxValue,
