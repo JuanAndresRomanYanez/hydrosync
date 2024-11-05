@@ -17,5 +17,11 @@ class GreenhouseRepositoryImpl extends GreenhousesRepository{
   Stream<List<Greenhouse>> getAllGreenhouses() {
     return datasource.getAllGreenhouses();
   }
+  
+  @override
+  Future<void> updateGreenhouseDetails(int id, Details details) {
+    return datasource.updateGreenhouseDetails(id, details);
+  }
+  
 
 }

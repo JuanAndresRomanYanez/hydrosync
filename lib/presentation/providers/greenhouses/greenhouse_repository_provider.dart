@@ -20,3 +20,4 @@ final greenhousesStreamProvider = StreamProvider<List<Greenhouse>>((ref) {
   final repository = ref.watch(greenhouseRepositoryProvider);
   return repository.getAllGreenhouses();
 });
+
