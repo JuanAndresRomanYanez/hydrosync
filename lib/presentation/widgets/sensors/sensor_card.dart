@@ -86,7 +86,7 @@ class SensorCard extends StatelessWidget {
                   child: Text(
                     formattedValue,
                     style: const TextStyle(
-                      fontSize: 55,
+                      fontSize: 50,
                       fontWeight: FontWeight.bold,
                       color: Colors.blueAccent,
                     ),
@@ -99,9 +99,9 @@ class SensorCard extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: onButtonPressed,
-                icon: const Icon(Icons.visibility, color: Colors.white),
+                icon: const Icon(Icons.settings, color: Colors.white),
                 label: const Text(
-                  'Más detalles',
+                  'Configuración',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class SensorCard extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  backgroundColor: Colors.deepOrangeAccent,
+                  backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),

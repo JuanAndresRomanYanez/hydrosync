@@ -14,13 +14,8 @@ class GreenhousesDetailsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
+        title: const Text(
             'DETALLES DEL INVERNADERO',
-            style: TextStyle(
-              fontSize: 30,
-            ),
-          ),
         ),
       ),
       body: GreenhouseOptions(id: id,),

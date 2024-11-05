@@ -5,6 +5,7 @@ class CustomTextFormField extends StatelessWidget {
   final String labelText;
   final TextStyle? labelStyle;
   final TextStyle? inputTextStyle;
+  final TextInputType? keyboardType;
 
   const CustomTextFormField({
     super.key,
@@ -12,6 +13,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.labelText,
     this.labelStyle,
     this.inputTextStyle,
+    this.keyboardType,
   });
 
   @override
@@ -23,6 +25,7 @@ class CustomTextFormField extends StatelessWidget {
         labelStyle: labelStyle,
       ),
       style: inputTextStyle,
+      keyboardType: keyboardType,
     );
   }
 }

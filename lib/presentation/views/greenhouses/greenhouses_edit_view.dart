@@ -40,13 +40,8 @@ class GreenhousesEditViewState extends ConsumerState<GreenhousesEditView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'EDICIÓN DEL INVERNADERO',
-            style: TextStyle(
-              fontSize: 30,
-            ),
-          ),
+        title: const Text(
+          'EDITAR DETALLES',
         ),
       ),
       body: greenhousesAsyncValue.when(

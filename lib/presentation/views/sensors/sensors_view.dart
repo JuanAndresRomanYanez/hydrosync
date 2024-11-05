@@ -55,7 +55,7 @@ class SensorsView extends ConsumerWidget {
                     sensorId: sensor['id'].toString(),
                     onButtonPressed: () {
                       context.push(
-                        '/greenhouses/details/sensors/details',
+                        '/greenhouses/details/sensors/config',
                         extra: {
                           'greenhouseId': id,
                           'sensorId': sensor['id'].toString(),

@@ -27,7 +27,7 @@ class InformativeDataRow extends StatelessWidget {
               '$label: ',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 25,
+                fontSize: 20,
                 color: Colors.black,
               ),
             ),
@@ -35,7 +35,7 @@ class InformativeDataRow extends StatelessWidget {
               child: Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 25,
+                  fontSize: 20,
                   color: Colors.black,
                 ),
               ),

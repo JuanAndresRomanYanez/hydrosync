@@ -30,7 +30,7 @@ class ActionButton extends StatelessWidget {
           label,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 25,
+            fontSize: 20,
           ),
         ),
         style: ElevatedButton.styleFrom(

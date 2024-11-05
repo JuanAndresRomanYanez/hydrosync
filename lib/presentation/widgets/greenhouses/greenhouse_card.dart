@@ -84,7 +84,7 @@ class GreenhouseCard extends ConsumerWidget {
                     );
                   },
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 ActionButton(
                   label: 'Editar',
                   icon: Icons.edit,

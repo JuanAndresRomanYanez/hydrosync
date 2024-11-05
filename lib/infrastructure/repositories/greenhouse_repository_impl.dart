@@ -23,5 +23,10 @@ class GreenhouseRepositoryImpl extends GreenhousesRepository{
     return datasource.updateGreenhouseDetails(id, details);
   }
   
+  @override
+  Future<void> updateSensorData(int greenhouseId, String sensorId, Sensor sensor) {
+    return datasource.updateSensorData(greenhouseId, sensorId, sensor);
+  }
+  
 
 }

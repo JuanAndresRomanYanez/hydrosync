@@ -50,13 +50,13 @@ final appRouter = GoRouter(
                       },
                       routes: [
                         GoRoute(
-                          path: 'details',
+                          path: 'config',
                           builder: (context, state) {
                             final extra = state.extra as Map<String, dynamic>?;
                             final greenhouseId = extra?['greenhouseId'] as int?;
                             final sensorId = extra?['sensorId'] as String?;
 
-                            return SensorsDetailsView(
+                            return SensorsConfigView(
                               greenhouseId: greenhouseId ?? 0,
                               sensorId: sensorId ?? '',
                             );

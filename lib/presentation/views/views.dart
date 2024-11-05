@@ -10,4 +10,4 @@ export 'pests/pests_view.dart';
 export 'reports/reports_view.dart';
 
 export 'sensors/sensors_view.dart';
-export 'sensors/sensors_details_view.dart';
+export 'sensors/sensors_config_view.dart';
