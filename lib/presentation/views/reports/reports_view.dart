@@ -8,13 +8,11 @@ class ReportsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'REPORTES', 
-            style: TextStyle(
-              fontSize: 30,
-            ),
-          )
+        title: const Text(
+          'REPORTES', 
+          style: TextStyle(
+            fontSize: 30,
+          ),
         ),
       ),
       body: const Placeholder(),

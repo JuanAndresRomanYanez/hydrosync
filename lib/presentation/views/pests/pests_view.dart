@@ -13,13 +13,11 @@ class PestsView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'PLAGAS', 
-            style: TextStyle(
-              fontSize: 30,
-            ),
-          )
+        title: const Text(
+          'PLAGAS', 
+          style: TextStyle(
+            fontSize: 30,
+          ),
         ),
       ),
       body: const Placeholder(),

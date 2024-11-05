@@ -36,4 +36,13 @@ class ControlModel {
       status: json['status'] ?? false,
     );
   }
+
+  // Método para crear un ControlModel desde una entidad Control
+  factory ControlModel.fromEntity(Control control) {
+    return ControlModel(
+      time: control.time,
+      method: control.method,
+      status: control.status,
+    );
+  }
 }

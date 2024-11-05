@@ -14,6 +14,15 @@ class GreenhouseModel {
     required this.controls,
   });
 
+  factory GreenhouseModel.fromEntity(Greenhouse greenhouse) {
+    return GreenhouseModel(
+      crops: greenhouse.crops.map((crop) => CropModel.fromEntity(crop)).toList(),
+      details: DetailsModel.fromEntity(greenhouse.details),
+      sensors: greenhouse.sensors.map((sensor) => SensorModel.fromEntity(sensor)).toList(),
+      controls: greenhouse.controls.map((control) => ControlModel.fromEntity(control)).toList(),
+    );
+  }
+
   factory GreenhouseModel.fromJson(Map<String, dynamic> json) {
     return GreenhouseModel(
       // Convierte el mapa 'crops' en una lista de CropModel

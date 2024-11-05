@@ -13,8 +13,11 @@ class CustomBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.teal,
-      // fixedColor: Colors.white,
+      backgroundColor: Colors.green,
+      // fixedColor: const Color(0xff0000FF),
+      // fixedColor: const Color(0xff0000FF),
+      selectedItemColor: const Color(0xff0000FF),
+      // unselectedItemColor: Colors.white,
       type: BottomNavigationBarType.fixed, // Asegura un comportamiento fijo
       currentIndex: currentChild.currentIndex,
       onTap: (idx) => currentChild.goBranch(idx),

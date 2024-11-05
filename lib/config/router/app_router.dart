@@ -1,6 +1,5 @@
 // import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hydrosync/domain/entities/entities.dart';
 import 'package:hydrosync/presentation/screens/screens.dart';
 import 'package:hydrosync/presentation/views/views.dart';
 
@@ -30,9 +29,9 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'details', // Ruta secundaria
-                  builder: (context, state){
-                    final greenhouse = state.extra! as String;
-                    return GreenhousesDetailsView(greenhouse: greenhouse);
+                  builder: (context, state) {
+                    final extra = state.extra as int?; // Accediendo al extra
+                    return GreenhousesDetailsView(extra: extra ?? 0); // Pasar el parámetro al siguiente widget
                   },
                   routes: [
                     GoRoute(
@@ -56,18 +55,16 @@ final appRouter = GoRouter(
                       builder: (context, state) => const ControlsView(),
                     ),
 
-                    GoRoute(
-                      path: 'configuration', // Ruta secundaria
-                      builder: (context, state) => const GreenhouseConfigurationView(),
-                    ),
-
                   ],
                 ),
 
 
                 GoRoute(
                   path: 'edit', // Ruta secundaria
-                  builder: (context, state) => const GreenhousesEditView(),
+                  builder: (context, state) {
+                    final extra = state.extra as int?; // Accediendo al extra
+                    return GreenhousesEditView(extra: extra ?? 0); // Pasar el parámetro al siguiente widget
+                  },
                 ),
               ],
             ),

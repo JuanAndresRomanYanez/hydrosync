@@ -1,122 +1,70 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hydrosync/presentation/providers/providers.dart';
 
-class GreenhousesEditView extends StatefulWidget {
-  const GreenhousesEditView({super.key});
+class GreenhousesEditView extends ConsumerWidget {
+  final int extra;
 
-  @override
-  _GreenhousesEditViewState createState() => _GreenhousesEditViewState();
-}
-
-class _GreenhousesEditViewState extends State<GreenhousesEditView> {
-  final DatabaseReference _invernaderoRef =
-      FirebaseDatabase.instance.ref().child('greenhouses/greenhouse_1/details');
-
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _sizeController = TextEditingController();
-  final TextEditingController _statusController = TextEditingController();
+  const GreenhousesEditView({
+    super.key, 
+    required this.extra
+  });
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
 
-  void _loadData() async {
-    final dataSnapshot = await _invernaderoRef.get();
-    final data = dataSnapshot.value as Map?;
-    setState(() {
-      _nameController.text = data?['name'] ?? '';
-      _locationController.text = data?['location'] ?? '';
-      _sizeController.text = data?['size'].toString() ?? '';
-      _statusController.text = data?['status'] ?? '';
-    });
-  }
-
-  void _saveData() {
-    if (_formKey.currentState!.validate()) {
-      _invernaderoRef.update({
-        'name': _nameController.text,
-        'location': _locationController.text,
-        'size': int.tryParse(_sizeController.text) ?? 0,
-        'status': _statusController.text,
-      }).then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Datos actualizados correctamente')),
-        );
-      }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar datos: $error')),
-        );
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    final greenhousesAsyncValue = ref.watch(greenhousesStreamProvider);
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EDITAR'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Regresa a la vista anterior
-          },
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
-                validator: (value) => value!.isEmpty ? 'Ingrese un nombre' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Ubicación'),
-                validator: (value) => value!.isEmpty ? 'Ingrese una ubicación' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _sizeController,
-                decoration: const InputDecoration(labelText: 'Tamaño (m²)'),
-                keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty ? 'Ingrese el tamaño' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _statusController,
-                decoration: const InputDecoration(labelText: 'Estado'),
-                validator: (value) => value!.isEmpty ? 'Ingrese el estado' : null,
-              ),
-              const SizedBox(height: 32),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveData,
-                  child: const Text('Guardar'),
-                ),
-              ),
-            ],
+        title: const Center(
+          child: Text(
+            'EDICIÓN DEL INVERNADERO',
+            style: TextStyle(
+              fontSize: 30,
+            ),
           ),
         ),
       ),
-    );
-  }
+      body: greenhousesAsyncValue.when(
+        data: (greenhouses) {
+          // Buscamos el invernadero específico por nombre
+          final greenhouse = greenhouses.firstWhere(
+            (g) => g.details.id == extra,
+          );
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _locationController.dispose();
-    _sizeController.dispose();
-    _statusController.dispose();
-    super.dispose();
+
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Nombre: ${greenhouse.details.name}',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Ubicación: ${greenhouse.details.location}',
+                  style: const TextStyle(fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Tamaño: ${greenhouse.details.size}',
+                  style: const TextStyle(fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Estado: ${greenhouse.details.status}',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
+    );
   }
 }

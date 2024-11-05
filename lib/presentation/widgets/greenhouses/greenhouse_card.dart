@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:hydrosync/domain/entities/greenhouse.dart';
+import 'package:hydrosync/infrastructure/models/models.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 class GreenhouseCard extends ConsumerWidget {
@@ -26,7 +25,8 @@ class GreenhouseCard extends ConsumerWidget {
           width: 2.0,
         ),
       ),
-      elevation: 5,
+      elevation: 10,
+      shadowColor: Colors.black.withOpacity(0.5),
       child: Padding(
         padding: const EdgeInsets.all(30),
         child: Column(
@@ -39,7 +39,7 @@ class GreenhouseCard extends ConsumerWidget {
                 greenhouse.details.name,
                 textAlign: TextAlign.center, // Centrar el texto
                 style: const TextStyle(
-                  fontSize: 30,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -77,23 +77,23 @@ class GreenhouseCard extends ConsumerWidget {
                 ActionButton(
                   label: 'Ver más',
                   icon: Icons.visibility,
-                  color: Colors.green,
+                  color: Colors.blue,
                   onPressed: () {
                     context.push(
                       '/greenhouses/details',
-                      extra: greenhouse,
+                      extra: greenhouse.details.id,
                     );
                   },
                 ),
-                const SizedBox(width: 30),
+                const SizedBox(width: 10),
                 ActionButton(
                   label: 'Editar',
                   icon: Icons.edit,
-                  color: Colors.orange,
+                  color: Colors.green,
                   onPressed: () {
                     context.push(
                       '/greenhouses/edit',
-                      extra: greenhouse,
+                      extra: greenhouse.details.id,
                     );
                   },
                 ),
@@ -101,90 +101,6 @@ class GreenhouseCard extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-
-class AutoScrollImageCarousel extends StatefulWidget {
-  final List<String> imagePaths;
-
-  const AutoScrollImageCarousel({
-    super.key,
-    required this.imagePaths,
-  });
-
-  @override
-  AutoScrollImageCarouselState createState() => AutoScrollImageCarouselState();
-}
-
-class AutoScrollImageCarouselState extends State<AutoScrollImageCarousel> {
-  late PageController _pageController;
-  late Timer _timer;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.8); // Ajuste para dar efecto de carrusel.
-
-    // Iniciar el temporizador para desplazar las páginas automáticamente
-    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
-      if (_currentPage < widget.imagePaths.length - 1) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      width: double.infinity,
-      child: PageView.builder(
-        controller: _pageController,
-        itemCount: widget.imagePaths.length,
-        itemBuilder: (context, index) {
-          return AnimatedBuilder(
-            animation: _pageController,
-            builder: (context, child) {
-              double value = 1.0;
-              if (_pageController.position.haveDimensions) {
-                value = _pageController.page! - index;
-                value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
-              }
-              return Center(
-                child: SizedBox(
-                  height: Curves.easeIn.transform(value) * 200,
-                  width: Curves.easeIn.transform(value) * 300,
-                  child: child,
-                ),
-              );
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: Image.asset(
-                widget.imagePaths[index],
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        },
       ),
     );
   }

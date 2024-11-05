@@ -34,4 +34,13 @@ class CropModel {
       image: json['image'] ?? '',
     );
   }
+
+  // Método para crear un CropModel desde una entidad Crop
+  factory CropModel.fromEntity(Crop crop) {
+    return CropModel(
+      name: crop.name,
+      description: crop.description,
+      image: crop.image,
+    );
+  }
 }

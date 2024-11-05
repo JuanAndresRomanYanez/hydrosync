@@ -24,7 +24,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('MALEN CULTIVOS HIDROPÓNICOS'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.green,
         actions: [
           IconButton(
             icon: Icon( isDarkMode ? Icons.dark_mode_outlined : Icons.light_mode_outlined ),

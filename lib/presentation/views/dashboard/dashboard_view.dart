@@ -8,13 +8,11 @@ class DashboardView extends StatelessWidget {
     return Scaffold(
       // drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'DASHBOARD', 
-            style: TextStyle(
-              fontSize: 30,
-            ),
-          )
+        title:const Text(
+          'DASHBOARD', 
+          style: TextStyle(
+            fontSize: 30,
+          ),
         ),
       ),
       body: const Placeholder(),

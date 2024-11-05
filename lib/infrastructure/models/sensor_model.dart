@@ -49,4 +49,17 @@ class SensorModel {
       value: (json['value']).toDouble() ?? 0,
     );
   }
+
+  // Método para crear un SensorModel desde una entidad Sensor
+  factory SensorModel.fromEntity(Sensor sensor) {
+    return SensorModel(
+      name: sensor.name,
+      image: sensor.image,
+      maxValue: sensor.maxValue,
+      minValue: sensor.minValue,
+      updateFrequency: sensor.updateFrequency,
+      value: sensor.value,
+    );
+  }
+
 }
