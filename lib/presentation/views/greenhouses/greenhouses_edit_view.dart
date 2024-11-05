@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hydrosync/presentation/providers/providers.dart';
+import 'package:hydrosync/presentation/widgets/widgets.dart';
 
 import '../../../domain/entities/entities.dart';
 
@@ -8,9 +9,9 @@ class GreenhousesEditView extends ConsumerStatefulWidget {
   final int extra;
 
   const GreenhousesEditView({
-    super.key,
+    Key? key,
     required this.extra,
-  });
+  }) : super(key: key);
 
   @override
   GreenhousesEditViewState createState() => GreenhousesEditViewState();
@@ -74,33 +75,28 @@ class GreenhousesEditViewState extends ConsumerState<GreenhousesEditView> {
             padding: const EdgeInsets.all(20.0),
             child: ListView(
               children: [
-                TextFormField(
+                CustomTextFormField(
                   controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre',
-                    labelStyle: labelTextStyle,
-                  ),
-                  style: inputTextStyle,
+                  labelText: 'Nombre',
+                  labelStyle: labelTextStyle,
+                  inputTextStyle: inputTextStyle,
                 ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: locationController,
-                  decoration: InputDecoration(
-                    labelText: 'Ubicación',
-                    labelStyle: labelTextStyle,
-                  ),
-                  style: inputTextStyle,
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
 
-                // Menú desplegable para "Tamaño"
-                DropdownButtonFormField<String>(
+                CustomTextFormField(
+                  controller: locationController,
+                  labelText: 'Ubicación',
+                  labelStyle: labelTextStyle,
+                  inputTextStyle: inputTextStyle,
+                ),
+                const SizedBox(height: 30),
+
+                CustomDropdownFormField<String>(
                   value: selectedSize,
-                  decoration: InputDecoration(
-                    labelText: 'Tamaño',
-                    labelStyle: labelTextStyle,
-                  ),
-                  style: inputTextStyle,
+                  labelText: 'Tamaño',
+                  labelStyle: labelTextStyle,
+                  inputTextStyle: inputTextStyle,
+                  dropdownTextStyle: dropdownTextStyle,
                   items: ['Pequeño', 'Mediano', 'Grande']
                       .map((size) => DropdownMenuItem(
                             value: size,
@@ -116,16 +112,14 @@ class GreenhousesEditViewState extends ConsumerState<GreenhousesEditView> {
                     });
                   },
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
 
-                // Menú desplegable para "Estado"
-                DropdownButtonFormField<String>(
+                CustomDropdownFormField<String>(
                   value: selectedStatus,
-                  decoration: InputDecoration(
-                    labelText: 'Estado',
-                    labelStyle: labelTextStyle,
-                  ),
-                  style: inputTextStyle,
+                  labelText: 'Estado',
+                  labelStyle: labelTextStyle,
+                  inputTextStyle: inputTextStyle,
+                  dropdownTextStyle: dropdownTextStyle,
                   items: ['Activo', 'Inactivo']
                       .map((status) => DropdownMenuItem(
                             value: status,
@@ -141,7 +135,7 @@ class GreenhousesEditViewState extends ConsumerState<GreenhousesEditView> {
                     });
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
 
                 ElevatedButton(
                   onPressed: () async {
@@ -173,10 +167,12 @@ class GreenhousesEditViewState extends ConsumerState<GreenhousesEditView> {
                       );
                     }
                   },
-                  child: Text(
-                    'Guardar cambios',
-                    style: inputTextStyle?.copyWith(fontSize: 25),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    textStyle: inputTextStyle?.copyWith(fontSize: 25),
                   ),
+                  child: const Text('Guardar cambios'),
                 ),
               ],
             ),
