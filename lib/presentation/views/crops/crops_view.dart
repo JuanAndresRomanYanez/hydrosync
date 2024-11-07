@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hydrosync/presentation/providers/providers.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 
@@ -53,12 +54,24 @@ class CropsView extends ConsumerWidget {
               );
             },
           );
-
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Acción al presionar el botón
+          // Navegar a la vista de agregar cultivo
+          context.push(
+            '/greenhouses/details/crops/add', 
+            extra: id
+          );
+          
+        },
+        tooltip: 'Agregar Cultivo',
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
 }

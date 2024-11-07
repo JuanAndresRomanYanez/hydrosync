@@ -13,3 +13,4 @@ export 'greenhouses/greenhouse_option_card.dart';
 export 'sensors/sensor_card.dart';
 
 export 'crops/crop_card.dart';
+export 'crops/crop_add_card.dart';

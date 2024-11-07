@@ -34,12 +34,23 @@ final appRouter = GoRouter(
                     return GreenhousesDetailsView(id: extra ?? 0); // Pasar el parámetro al siguiente widget
                   },
                   routes: [
+                    
                     GoRoute(
                       path: 'crops', // Ruta secundaria
                       builder: (context, state){
                         final extra = state.extra as int?;
                         return CropsView(id: extra ?? 0);
-                      }
+                      },
+                      routes:[
+                        GoRoute(
+                          path: 'add',
+                          builder: (context, state){
+                            final extra = state.extra as int?;
+                            return CropsAddView(id: extra ?? 0);
+                          }
+                        ),
+                      ],
+
                     ),
 
                     GoRoute(

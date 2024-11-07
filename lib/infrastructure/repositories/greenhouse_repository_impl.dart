@@ -28,5 +28,15 @@ class GreenhouseRepositoryImpl extends GreenhousesRepository{
     return datasource.updateSensorData(greenhouseId, sensorId, sensor);
   }
   
+  @override
+  Stream<List<Crop>> getAllCrops() {
+    return datasource.getAllCrops();
+  }
+  
+  @override
+  Future<void> addCropToGreenhouse(int greenhouseId, Crop crop) {
+    return datasource.addCropToGreenhouse(greenhouseId, crop);
+  }
+  
 
 }
