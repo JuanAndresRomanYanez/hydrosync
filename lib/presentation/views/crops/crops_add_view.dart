@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hydrosync/domain/entities/entities.dart';
 import 'package:hydrosync/presentation/providers/providers.dart';
 import 'package:hydrosync/presentation/widgets/widgets.dart';
 

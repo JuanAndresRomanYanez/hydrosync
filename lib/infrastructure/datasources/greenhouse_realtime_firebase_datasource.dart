@@ -160,6 +160,59 @@ Future<void> updateGreenhouseDetails(int id, Details details) async {
       throw Exception("No se encontraron invernaderos en Firebase.");
     }
   }
+  
+  @override
+  Future<void> removeCropFromGreenhouse(int greenhouseId, int cropId) async{
+    final greenhousesRef = _databaseRef.child('greenhouses');
+
+    final snapshot = await greenhousesRef.get();
+
+    if (snapshot.exists && snapshot.value != null) {
+      final greenhousesMap = snapshot.value as Map<dynamic, dynamic>;
+
+      String? greenhouseKey;
+      for (var entry in greenhousesMap.entries) {
+        final data = Map<String, dynamic>.from(entry.value['details']);
+        if (data['id'] == greenhouseId) {
+          greenhouseKey = entry.key;
+          break;
+        }
+      }
+
+      if (greenhouseKey != null) {
+        final cropsRef = _databaseRef.child('greenhouses/$greenhouseKey/crops');
+
+        // Obtener el snapshot de los cultivos
+        final cropsSnapshot = await cropsRef.get();
+
+        if (cropsSnapshot.exists && cropsSnapshot.value != null) {
+          final cropsMap = cropsSnapshot.value as Map<dynamic, dynamic>;
+
+          String? cropKey;
+          for (var entry in cropsMap.entries) {
+            final data = Map<String, dynamic>.from(entry.value);
+            if (data['id'] == cropId) {
+              cropKey = entry.key;
+              break;
+            }
+          }
+
+          if (cropKey != null) {
+            // Eliminar el cultivo
+            await cropsRef.child(cropKey).remove();
+          } else {
+            throw Exception("Cultivo con ID $cropId no encontrado en el invernadero.");
+          }
+        } else {
+          throw Exception("No se encontraron cultivos en el invernadero.");
+        }
+      } else {
+        throw Exception("Invernadero con ID $greenhouseId no encontrado.");
+      }
+    } else {
+      throw Exception("No se encontraron invernaderos en Firebase.");
+    }
+  }
 
   
   

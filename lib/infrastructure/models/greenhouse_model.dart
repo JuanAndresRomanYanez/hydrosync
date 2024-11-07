@@ -24,22 +24,58 @@ class GreenhouseModel {
   }
 
   factory GreenhouseModel.fromJson(Map<String, dynamic> json) {
+    // Manejar el campo 'crops'
+    List<CropModel> cropsList = [];
+    if (json.containsKey('crops') && json['crops'] != null) {
+      if (json['crops'] is Map) {
+        cropsList = (json['crops'] as Map<dynamic, dynamic>).values
+            .map((crop) => CropModel.fromJson(Map<String, dynamic>.from(crop)))
+            .toList();
+      } else {
+        // Manejar el caso en que 'crops' no es un Map
+        // print("Advertencia: 'crops' no es un Map. Valor actual: ${json['crops']}");
+      }
+    } else {
+      // Si 'crops' no existe o es null, dejamos la lista vacía
+      cropsList = [];
+    }
+
+    // Hacemos lo mismo para 'sensors' y 'controls'
+
+    // Manejar el campo 'sensors'
+    List<SensorModel> sensorsList = [];
+    if (json.containsKey('sensors') && json['sensors'] != null) {
+      if (json['sensors'] is Map) {
+        sensorsList = (json['sensors'] as Map<dynamic, dynamic>).values
+            .map((sensor) => SensorModel.fromJson(Map<String, dynamic>.from(sensor)))
+            .toList();
+      } else {
+        // print("Advertencia: 'sensors' no es un Map. Valor actual: ${json['sensors']}");
+      }
+    } else {
+      sensorsList = [];
+    }
+
+    // Manejar el campo 'controls'
+    List<ControlModel> controlsList = [];
+    if (json.containsKey('controls') && json['controls'] != null) {
+      if (json['controls'] is Map) {
+        controlsList = (json['controls'] as Map<dynamic, dynamic>).values
+            .map((control) => ControlModel.fromJson(Map<String, dynamic>.from(control)))
+            .toList();
+      } else {
+        // print("Advertencia: 'controls' no es un Map. Valor actual: ${json['controls']}");
+      }
+    } else {
+      controlsList = [];
+    }
+
+    // Ahora podemos construir el GreenhouseModel
     return GreenhouseModel(
-      // Convierte el mapa 'crops' en una lista de CropModel
-      crops: (json['crops'] as Map<dynamic, dynamic>).values
-          .map((crop) => CropModel.fromJson(Map<String, dynamic>.from(crop)))
-          .toList(),
+      crops: cropsList,
       details: DetailsModel.fromJson(Map<String, dynamic>.from(json['details'])),
-      
-      // Convierte el mapa 'sensors' en una lista de SensorModel
-      sensors: (json['sensors'] as Map<dynamic, dynamic>).values
-          .map((sensor) => SensorModel.fromJson(Map<String, dynamic>.from(sensor)))
-          .toList(),
-      
-      // Convierte el mapa 'controls' en una lista de ControlModel
-      controls: (json['controls'] as Map<dynamic, dynamic>).values
-          .map((control) => ControlModel.fromJson(Map<String, dynamic>.from(control)))
-          .toList(),
+      sensors: sensorsList,
+      controls: controlsList,
     );
   }
 

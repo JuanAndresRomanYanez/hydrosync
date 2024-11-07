@@ -4,14 +4,16 @@ class CropCard extends StatelessWidget {
   final String imageUrl;
   final String description;
   final String cropName;
-  final VoidCallback onButtonPressed;
+  final VoidCallback onDeletePressed;
+  final VoidCallback onCardPressed;
 
   const CropCard({
     super.key,
     required this.imageUrl,
     required this.description,
     required this.cropName,
-    required this.onButtonPressed,
+    required this.onDeletePressed,
+    required this.onCardPressed,
   });
 
   @override
@@ -24,70 +26,84 @@ class CropCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
       ),
       margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-      child: InkWell(
-        onTap: onButtonPressed,
-        borderRadius: BorderRadius.circular(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Imagen con nombre del cultivo superpuesto
-            Stack(
+      child: Stack(
+        children: [
+          InkWell(
+            onTap: onCardPressed,
+            borderRadius: BorderRadius.circular(15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Imagen del cultivo
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
-                  child: Image.asset(
-                    imageUrl,
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                // Degradado para mejorar la legibilidad del texto
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
+                // Imagen con nombre del cultivo superpuesto
+                Stack(
+                  children: [
+                    // Imagen del cultivo
+                    ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
-                      gradient: LinearGradient(
-                        colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+                      child: Image.asset(
+                        imageUrl,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                ),
-                // Nombre del cultivo
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  child: Text(
-                    cropName,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        const Shadow(
-                          blurRadius: 10.0,
-                          color: Colors.black54,
-                          offset: Offset(2.0, 2.0),
+                    // Degradado para mejorar la legibilidad del texto
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
+                          gradient: LinearGradient(
+                            colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
                         ),
-                      ],
+                      ),
                     ),
+                    // Nombre del cultivo
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      child: Text(
+                        cropName,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            const Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.black54,
+                              offset: Offset(2.0, 2.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // Descripción del cultivo
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    description,
+                    style: theme.textTheme.bodyMedium, // Utiliza el estilo del tema
+                    textAlign: TextAlign.left,
                   ),
                 ),
               ],
             ),
-            // Descripción del cultivo
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                description,
-                style: theme.textTheme.bodyMedium, // Utiliza el estilo del tema
-                textAlign: TextAlign.left,
-              ),
+          ),
+          // Botón de eliminar en la esquina superior derecha
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: onDeletePressed,
+              tooltip: 'Eliminar cultivo',
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -37,7 +37,7 @@ class CropsView extends ConsumerWidget {
 
           // Mostrar la lista de cultivos
           return ListView.builder(
-            padding: const EdgeInsets.only(bottom: 16.0), // Agrega un padding inferior si lo deseas
+            padding: const EdgeInsets.only(bottom: 16.0),
             itemCount: crops.length,
             itemBuilder: (context, index) {
               final crop = crops[index];
@@ -45,11 +45,44 @@ class CropsView extends ConsumerWidget {
                 imageUrl: crop.image,
                 description: crop.description,
                 cropName: crop.name,
-                onButtonPressed: () {
+                onCardPressed: () {
                   // Acción al presionar la tarjeta
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Detalles de ${crop.name}')),
                   );
+                },
+                onDeletePressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Confirmar eliminación'),
+                      content: Text('¿Estás seguro de que deseas eliminar el cultivo "${crop.name}" del invernadero?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text('Cancelar'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    try {
+                      await ref.read(greenhouseRepositoryProvider).removeCropFromGreenhouse(id, crop.id);
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(content: Text('Cultivo "${crop.name}" eliminado del invernadero.')),
+                      );
+                    } catch (e) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(content: Text('Error al eliminar el cultivo: $e')),
+                      );
+                    }
+                  }
                 },
               );
             },
@@ -63,10 +96,9 @@ class CropsView extends ConsumerWidget {
           // Acción al presionar el botón
           // Navegar a la vista de agregar cultivo
           context.push(
-            '/greenhouses/details/crops/add', 
-            extra: id
+            '/greenhouses/details/crops/add',
+            extra: id,
           );
-          
         },
         tooltip: 'Agregar Cultivo',
         child: const Icon(Icons.add),
@@ -75,3 +107,4 @@ class CropsView extends ConsumerWidget {
     );
   }
 }
+

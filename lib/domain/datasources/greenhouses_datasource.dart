@@ -10,5 +10,7 @@ abstract class GreenhousesDatasource {
   Stream<List<Crop>> getAllCrops();
 
   Future<void> addCropToGreenhouse(int greenhouseId, Crop crop);
+
+  Future<void> removeCropFromGreenhouse(int greenhouseId, int cropId);
   
 }

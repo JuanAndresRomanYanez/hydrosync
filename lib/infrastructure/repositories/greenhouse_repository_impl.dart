@@ -38,5 +38,10 @@ class GreenhouseRepositoryImpl extends GreenhousesRepository{
     return datasource.addCropToGreenhouse(greenhouseId, crop);
   }
   
+  @override
+  Future<void> removeCropFromGreenhouse(int greenhouseId, int cropId) {
+    return datasource.removeCropFromGreenhouse(greenhouseId, cropId);
+  }
+  
 
 }
