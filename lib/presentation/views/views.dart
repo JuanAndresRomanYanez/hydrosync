@@ -1,4 +1,5 @@
 export 'controls/controls_view.dart';
+export 'controls/control_details_view.dart';
 
 export 'crops/crops_view.dart';
 export 'crops/crops_add_view.dart';

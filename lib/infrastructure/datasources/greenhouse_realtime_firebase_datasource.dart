@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hydrosync/domain/datasources/greenhouses_datasource.dart';
+import 'package:hydrosync/domain/entities/control.dart';
 import 'package:hydrosync/domain/entities/crop.dart';
 import 'package:hydrosync/domain/entities/details.dart';
 import 'package:hydrosync/domain/entities/greenhouse.dart';
@@ -214,7 +215,60 @@ Future<void> updateGreenhouseDetails(int id, Details details) async {
     }
   }
 
-  
-  
+  @override
+  Future<void> updateControlData(int greenhouseId, String controlId, Control control) async{
+    final greenhousesRef = _databaseRef.child('greenhouses');
+
+    final snapshot = await greenhousesRef.get();
+
+    if (snapshot.exists && snapshot.value != null) {
+      final greenhousesMap = snapshot.value as Map<dynamic, dynamic>;
+
+      String? greenhouseKey;
+      for (var entry in greenhousesMap.entries) {
+        final data = Map<String, dynamic>.from(entry.value['details']);
+        if (data['id'] == greenhouseId) {
+          greenhouseKey = entry.key;
+          break;
+        }
+      }
+
+      if (greenhouseKey != null) {
+        final controlsRef = _databaseRef.child('greenhouses/$greenhouseKey/controls');
+
+        // Obtener el snapshot de los controles
+        final controlsSnapshot = await controlsRef.get();
+
+        if (controlsSnapshot.exists && controlsSnapshot.value != null) {
+          final controlsMap = controlsSnapshot.value as Map<dynamic, dynamic>;
+
+          String? controlKey;
+          for (var entry in controlsMap.entries) {
+            final data = Map<String, dynamic>.from(entry.value);
+            if (data['id'] == controlId) {
+              controlKey = entry.key;
+              break;
+            }
+          }
+
+          if (controlKey != null) {
+            // Actualizar el control
+            final controlRef = controlsRef.child(controlKey);
+            final controlModel = ControlModel.fromEntity(control);
+
+            await controlRef.update(controlModel.toJson());
+          } else {
+            throw Exception("Control con ID $controlId no encontrado en el invernadero.");
+          }
+        } else {
+          throw Exception("No se encontraron controles en el invernadero.");
+        }
+      } else {
+        throw Exception("Invernadero con ID $greenhouseId no encontrado.");
+      }
+    } else {
+      throw Exception("No se encontraron invernaderos en Firebase.");
+    }
+  }
   
 }

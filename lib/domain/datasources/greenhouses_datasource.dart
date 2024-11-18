@@ -12,5 +12,7 @@ abstract class GreenhousesDatasource {
   Future<void> addCropToGreenhouse(int greenhouseId, Crop crop);
 
   Future<void> removeCropFromGreenhouse(int greenhouseId, int cropId);
+
+  Future<void> updateControlData(int greenhouseId, String controlId, Control control);
   
 }

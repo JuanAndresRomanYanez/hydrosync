@@ -82,6 +82,21 @@ final appRouter = GoRouter(
                         final extra = state.extra as int?;
                         return ControlsView(id: extra ?? 0);
                       },
+                      routes: [
+                        GoRoute(
+                          path: 'details',
+                          builder: (context, state) {
+                            final extra = state.extra as Map<String, dynamic>?;
+                            final greenhouseId = extra?['greenhouseId'] as int?;
+                            final controlId = extra?['controlId'] as String?;
+
+                            return ControlDetailsView(
+                              greenhouseId: greenhouseId ?? 0,
+                              controlId: controlId ?? '',
+                            );
+                          },
+                        ),
+                      ],
                     ),
 
                   ],
