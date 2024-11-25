@@ -9,9 +9,10 @@ import 'package:hydrosync/presentation/providers/providers.dart';
 
 Future<void> main() async{
   
+  WidgetsFlutterBinding.ensureInitialized();
+  
   await dotenv.load(fileName: '.env');
 
-  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

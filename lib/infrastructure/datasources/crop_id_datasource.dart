@@ -1,9 +1,7 @@
-
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
 import 'package:hydrosync/config/config.dart';
 
 import 'package:hydrosync/domain/datasources/crop_health_datasource.dart';
@@ -28,31 +26,6 @@ class CropIdDatasource extends CropHealthDatasource{
     ),
   );
 
-  
-  CropIdDatasource() {
-    // Deshabilitar temporalmente la verificación de certificados SSL
-    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate = (client) {
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
-    dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true,
-      responseBody: true,
-      error: true,
-      logPrint: (obj) => print(obj),
-    ));
-    
-    dio.options.requestEncoder = (request, options) => utf8.encode(json.encode(request));
-    dio.options.responseDecoder = (responseBytes, options, responseBody) {
-      return utf8.decode(responseBytes);
-    };
-
-  }
-
   @override
   Future<CropHealth> analyzeImage(String imagePath) async{
     print('analyzeImage llamado con imagePath: $imagePath');
@@ -68,39 +41,28 @@ class CropIdDatasource extends CropHealthDatasource{
       print('Archivo de imagen leído correctamente, tamaño: ${bytes.length} bytes');
 
       final base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
-      // final base64Image = 'data:image/jpeg;base64,';
       print('Imagen codificada en base64, longitud: ${base64Image.length} caracteres');
 
       // Crear el cuerpo de la solicitud JSON
       final data = {
         'images': [base64Image],
-        'latitude': 0, // Puedes obtener la ubicación real si es necesario
+        'latitude': 0,
         'longitude': 0,
         'similar_images': true,
       };
-      // Crear una copia de data sin la imagen completa para imprimir
-      final dataForPrint = Map<String, dynamic>.from(data);
-      dataForPrint['images'] = ['[imagen codificada en base64 omitida]'];
-      print('Datos preparados para la solicitud POST: $dataForPrint');
 
-      print('$data');
-      print('Datos preparados para la solicitud POST');
-
-      // Hacer la solicitud POST
       print('Realizando la solicitud POST...');
       final response = await dio.post(
-        '/api/v1/identification', 
+        '/api/v1/identification',
         data: data,
       );
+
       print('Solicitud POST realizada, esperando respuesta...');
 
-      // Agregar logs
-      print('Response status code: ${response.statusCode}');
-      print('Response data: ${response.data}');
-
       // Verificar el estado de la respuesta
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         print('Respuesta exitosa recibida');
+        print('Datos de respuesta: ${response.data}');
         // Parsear la respuesta
         final cropIdResponse = CropIdResponse.fromJson(response.data);
 
@@ -110,11 +72,10 @@ class CropIdDatasource extends CropHealthDatasource{
         return cropHealth;
       } else {
         print('Error en la solicitud: Código de estado ${response.statusCode}');
+        print('Detalles del error: ${response.data}');
         throw Exception('Error en la solicitud: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      // Manejo específico de errores de Dio
-      // Manejo específico de errores de Dio
       print('DioException atrapada: ${e.message}');
       print('Detalles del error: ${e.response?.data}');
       throw Exception('Error en la solicitud: ${e.message}');
@@ -158,5 +119,5 @@ class CropIdDatasource extends CropHealthDatasource{
           : '',
     );
   }
-
+  
 }
