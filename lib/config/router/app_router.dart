@@ -129,7 +129,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pests',
-              builder: (context, state) => const PestsView(),
+              builder: (context, state) => const CropHealthView(),
             ),
           ],
         ),

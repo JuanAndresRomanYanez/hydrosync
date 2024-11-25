@@ -61,149 +61,151 @@ class ControlDetailsViewState extends ConsumerState<ControlDetailsView> {
       appBar: AppBar(
         title: Text(currentControl.name),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Modo de Operación
-            CustomDropdownFormField<String>(
-              value: currentControl.mode,
-              labelText: 'Modo de Operación',
-              items: const [
-                DropdownMenuItem(value: 'manual', child: Text('Manual')),
-                DropdownMenuItem(value: 'automatic', child: Text('Automático')),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  currentControl = Control(
-                    id: currentControl.id,
-                    name: currentControl.name,
-                    image: currentControl.image,
-                    mode: value!,
-                    status: currentControl.status,
-                    onTime: currentControl.onTime,
-                    offTime: currentControl.offTime,
-                  );
-                });
-              },
-              inputTextStyle: inputTextStyle,
-            ),
-            const SizedBox(height: 16),
-            if (currentControl.mode == 'manual') ...[
-              // Modo manual
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Estado del control: ${currentControl.status ? 'Encendido' : 'Apagado'}'),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      try {
-                        // Cambiar el estado del control
-                        final newStatus = !currentControl.status;
-                        final updatedControl = Control(
-                          id: currentControl.id,
-                          name: currentControl.name,
-                          image: currentControl.image,
-                          mode: currentControl.mode,
-                          status: newStatus,
-                          onTime: currentControl.onTime,
-                          offTime: currentControl.offTime,
-                        );
-
-                        await ref.read(greenhouseRepositoryProvider).updateControlData(
-                              widget.greenhouseId,
-                              currentControl.id,
-                              updatedControl,
-                            );
-
-                        setState(() {
-                          currentControl = updatedControl;
-                        });
-
-                        scaffoldMessenger.showSnackBar(
-                          SnackBar(
-                            content: Text('${currentControl.name} ${newStatus ? 'encendido' : 'apagado'} correctamente.'),
-                          ),
-                        );
-                      } catch (e) {
-                        scaffoldMessenger.showSnackBar(
-                          SnackBar(content: Text('Error al actualizar el estado: $e')),
-                        );
-                      }
-                    },
-                    child: Text(currentControl.status ? 'Apagar' : 'Encender'),
-                  ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Modo de Operación
+              CustomDropdownFormField<String>(
+                value: currentControl.mode,
+                labelText: 'Modo de Operación',
+                items: const [
+                  DropdownMenuItem(value: 'manual', child: Text('Manual')),
+                  DropdownMenuItem(value: 'automatic', child: Text('Automático')),
                 ],
-              ),
-            ] else ...[
-              // Modo automático
-              const SizedBox(height: 16),
-              const Text('Tiempo encendido'),
-              TimeInput(
-                initialDuration: onDuration,
-                onDurationChanged: (newDuration) {
+                onChanged: (value) {
                   setState(() {
-                    onDuration = newDuration;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text('Tiempo apagado'),
-              TimeInput(
-                initialDuration: offDuration,
-                onDurationChanged: (newDuration) {
-                  setState(() {
-                    offDuration = newDuration;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-                  try {
-                    final onTimeSeconds = onDuration.inSeconds;
-                    final offTimeSeconds = offDuration.inSeconds;
-
-                    final updatedControl = Control(
+                    currentControl = Control(
                       id: currentControl.id,
                       name: currentControl.name,
                       image: currentControl.image,
-                      mode: currentControl.mode,
+                      mode: value!,
                       status: currentControl.status,
-                      onTime: onTimeSeconds,
-                      offTime: offTimeSeconds,
+                      onTime: currentControl.onTime,
+                      offTime: currentControl.offTime,
                     );
-
-                    await ref.read(greenhouseRepositoryProvider).updateControlData(
-                          widget.greenhouseId,
-                          currentControl.id,
-                          updatedControl,
-                        );
-
-                    setState(() {
-                      currentControl = updatedControl;
-                    });
-
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(content: Text('Configuración actualizada correctamente.')),
-                    );
-                  } catch (e) {
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text('Error al actualizar la configuración: $e')),
-                    );
-                  }
+                  });
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  textStyle: inputTextStyle?.copyWith(fontSize: 25),
-                ),
-                child: const Text('Guardar Configuración'),
+                inputTextStyle: inputTextStyle,
               ),
+              const SizedBox(height: 16),
+              if (currentControl.mode == 'manual') ...[
+                // Modo manual
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Estado del control: ${currentControl.status ? 'Encendido' : 'Apagado'}'),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        try {
+                          // Cambiar el estado del control
+                          final newStatus = !currentControl.status;
+                          final updatedControl = Control(
+                            id: currentControl.id,
+                            name: currentControl.name,
+                            image: currentControl.image,
+                            mode: currentControl.mode,
+                            status: newStatus,
+                            onTime: currentControl.onTime,
+                            offTime: currentControl.offTime,
+                          );
+        
+                          await ref.read(greenhouseRepositoryProvider).updateControlData(
+                                widget.greenhouseId,
+                                currentControl.id,
+                                updatedControl,
+                              );
+        
+                          setState(() {
+                            currentControl = updatedControl;
+                          });
+        
+                          scaffoldMessenger.showSnackBar(
+                            SnackBar(
+                              content: Text('${currentControl.name} ${newStatus ? 'encendido' : 'apagado'} correctamente.'),
+                            ),
+                          );
+                        } catch (e) {
+                          scaffoldMessenger.showSnackBar(
+                            SnackBar(content: Text('Error al actualizar el estado: $e')),
+                          );
+                        }
+                      },
+                      child: Text(currentControl.status ? 'Apagar' : 'Encender'),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                // Modo automático
+                const SizedBox(height: 16),
+                const Text('Tiempo encendido'),
+                TimeInput(
+                  initialDuration: onDuration,
+                  onDurationChanged: (newDuration) {
+                    setState(() {
+                      onDuration = newDuration;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                const Text('Tiempo apagado'),
+                TimeInput(
+                  initialDuration: offDuration,
+                  onDurationChanged: (newDuration) {
+                    setState(() {
+                      offDuration = newDuration;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    try {
+                      final onTimeSeconds = onDuration.inSeconds;
+                      final offTimeSeconds = offDuration.inSeconds;
+        
+                      final updatedControl = Control(
+                        id: currentControl.id,
+                        name: currentControl.name,
+                        image: currentControl.image,
+                        mode: currentControl.mode,
+                        status: currentControl.status,
+                        onTime: onTimeSeconds,
+                        offTime: offTimeSeconds,
+                      );
+        
+                      await ref.read(greenhouseRepositoryProvider).updateControlData(
+                            widget.greenhouseId,
+                            currentControl.id,
+                            updatedControl,
+                          );
+        
+                      setState(() {
+                        currentControl = updatedControl;
+                      });
+        
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(content: Text('Configuración actualizada correctamente.')),
+                      );
+                    } catch (e) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(content: Text('Error al actualizar la configuración: $e')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    textStyle: inputTextStyle?.copyWith(fontSize: 25),
+                  ),
+                  child: const Text('Guardar Configuración'),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

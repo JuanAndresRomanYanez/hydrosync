@@ -1,10 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
+
 import 'package:hydrosync/domain/datasources/greenhouses_datasource.dart';
-import 'package:hydrosync/domain/entities/control.dart';
-import 'package:hydrosync/domain/entities/crop.dart';
-import 'package:hydrosync/domain/entities/details.dart';
-import 'package:hydrosync/domain/entities/greenhouse.dart';
-import 'package:hydrosync/domain/entities/sensor.dart';
+import 'package:hydrosync/domain/entities/entities.dart';
+
 import 'package:hydrosync/infrastructure/models/models.dart';
 
 class GreenhouseRealtimeFirebaseDatasource extends GreenhousesDatasource {

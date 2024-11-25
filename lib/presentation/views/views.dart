@@ -10,7 +10,7 @@ export 'greenhouses/greenhouses_details_view.dart';
 export 'greenhouses/greenhouses_view.dart';
 export 'greenhouses/greenhouses_edit_view.dart';
 
-export 'pests/pests_view.dart';
+export 'crop_health/crop_health_view.dart';
 
 export 'reports/reports_view.dart';
 
