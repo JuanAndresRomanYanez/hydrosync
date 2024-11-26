@@ -4,9 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+
 
 import 'package:hydrosync/domain/entities/entities.dart';
 import 'package:hydrosync/presentation/providers/crop_health/crop_health_provider.dart';
@@ -25,7 +26,7 @@ class CropHealthView extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'Salud del Cultivo',
-          style: TextStyle(fontSize: 24),
+          style: TextStyle(fontSize: 24, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.green[700],
@@ -79,7 +80,7 @@ class CropHealthView extends ConsumerWidget {
                     ? null
                     : () => cropHealthNotifier.analyzeImage(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[700],
+                  backgroundColor: Colors.green,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 18),
                 ),
@@ -87,7 +88,10 @@ class CropHealthView extends ConsumerWidget {
                     ? const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       )
-                    : const Text('Analizar Imagen'),
+                    : const Text(
+                      'Analizar Imagen',
+                      style: TextStyle(color: Colors.white),
+                    ),
               ),
             ),
             const SizedBox(height: 24),
@@ -200,14 +204,21 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
       children: [
         // Botones para descargar y compartir PDF
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
               onPressed: _downloadPdf,
-              icon: const Icon(Icons.download, size: 24),
-              label: const Text('Descargar PDF'),
+              icon: const Icon(
+                Icons.download, 
+                size: 24, 
+                color: Colors.white,
+              ),
+              label: const Text(
+                'Descargar PDF',
+                style: TextStyle(color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[700],
+                backgroundColor: Colors.green,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 textStyle: const TextStyle(fontSize: 16),
               ),
@@ -215,10 +226,17 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
             const SizedBox(width: 16),
             ElevatedButton.icon(
               onPressed: _sharePdf,
-              icon: const Icon(Icons.share, size: 24),
-              label: const Text('Compartir PDF'),
+              icon: const Icon(
+                Icons.share, 
+                size: 24,
+                color: Colors.white,
+              ),
+              label: const Text(
+                'Compartir PDF',
+                style:TextStyle(color: Colors.white)
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[700],
+                backgroundColor: Colors.blue,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 textStyle: const TextStyle(fontSize: 16),
               ),
@@ -301,7 +319,7 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
   Future<void> _sharePdf() async {
     final pdfBytes = await _generatePdfBytes();
     // Compartir el PDF
-    await Printing.sharePdf(bytes: pdfBytes, filename: 'resultado.pdf');
+    await Printing.sharePdf(bytes: pdfBytes, filename: '${widget.result.diseaseName}.pdf');
   }
 
   Future<Uint8List> _generatePdfBytes() async {
@@ -370,21 +388,40 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
 
   Future<void> _savePdfLocally(Uint8List pdfBytes) async {
     try {
-      final directory = await getExternalStorageDirectory();
-      final path = '${directory!.path}/resultado.pdf';
+      String fileName = '${widget.result.diseaseName}_${DateTime.now().millisecondsSinceEpoch}.pdf';
 
-      final file = File(path);
-      await file.writeAsBytes(pdfBytes);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF guardado en: $path')),
+      final params = SaveFileDialogParams(
+        data: pdfBytes,
+        fileName: fileName,
       );
+
+      final filePath = await FlutterFileDialog.saveFile(params: params);
+
+      if (filePath != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('PDF guardado con éxito'))
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Guardado cancelado')),
+          );
+        }
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar el PDF: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar el PDF: $e')),
+        );
+      }
     }
   }
+
+
+
+
 }
 
 class ExpandableSection {
