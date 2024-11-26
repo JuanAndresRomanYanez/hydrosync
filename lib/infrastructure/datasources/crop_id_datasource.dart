@@ -62,12 +62,14 @@ class CropIdDatasource extends CropHealthDatasource{
       // Verificar el estado de la respuesta
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Respuesta exitosa recibida');
+        // print('Datos de respuesta JSON completo: ${jsonEncode(response)}');
         print('Datos de respuesta: ${response.data}');
         // Parsear la respuesta
         final cropIdResponse = CropIdResponse.fromJson(response.data);
-
+        print('LLega a parsearse correctamente');
         // Mapear el modelo a la entidad
         final cropHealth = _mapToEntity(cropIdResponse);
+        print('Accede aqui 1 token menos aghhhh');
 
         return cropHealth;
       } else {
@@ -86,38 +88,72 @@ class CropIdDatasource extends CropHealthDatasource{
   }
 
   CropHealth _mapToEntity(CropIdResponse response) {
-    // Verificar si hay sugerencias disponibles
-    if (response.result.disease.suggestions.isEmpty ||
-        response.result.crop.suggestions.isEmpty) {
-      throw Exception('No se encontraron resultados para la imagen proporcionada.');
+    try {
+      // Verificar si 'result' es nulo
+      if (response.result == null) {
+        throw Exception('No se encontraron resultados en la respuesta.');
+      }
+
+      final result = response.result!;
+
+      // Verificar si 'disease' y 'crop' no son nulos
+      if (result.disease == null ) {
+        throw Exception('Información incompleta en la respuesta.');
+      }
+
+      // Verificar si hay sugerencias disponibles
+      if (result.disease!.suggestions == null || result.disease!.suggestions!.isEmpty) {
+        throw Exception('No se encontraron sugerencias para la imagen proporcionada.');
+      }
+
+      // Tomar la primera sugerencia de enfermedad y cultivo
+      final diseaseSuggestion = result.disease!.suggestions!.first;
+
+      // Manejar posibles nulls en diseaseSuggestion
+      if (diseaseSuggestion == null) {
+        throw Exception('No hay sugerencias de enfermedad disponibles.');
+      }
+
+      // Manejar posibles nulls en diseaseSuggestion.details
+      if (diseaseSuggestion.details == null) {
+        throw Exception('No hay detalles disponibles para la enfermedad detectada.');
+      }
+
+      // Obtener el tratamiento
+      String treatment = 'No disponible.';
+      if (diseaseSuggestion.details!.treatment != null) {
+        final treatmentDetails = diseaseSuggestion.details!.treatment!;
+        treatment = '';
+
+        if (treatmentDetails.prevention != null && treatmentDetails.prevention.isNotEmpty) {
+          treatment += 'Prevención:\n${treatmentDetails.prevention.join('\n')}\n\n';
+        }
+        if (treatmentDetails.chemicalTreatment != null && treatmentDetails.chemicalTreatment.isNotEmpty) {
+          treatment += 'Tratamiento Químico:\n${treatmentDetails.chemicalTreatment.join('\n')}\n\n';
+        }
+        if (treatmentDetails.biologicalTreatment != null && treatmentDetails.biologicalTreatment.isNotEmpty) {
+          treatment += 'Tratamiento Biológico:\n${treatmentDetails.biologicalTreatment.join('\n')}';
+        }
+      }
+
+      // Manejar posibles nulls en diseaseDescription
+      String diseaseDescription = diseaseSuggestion.details!.description ?? 'No disponible.';
+
+      // Construir la entidad CropHealth
+      return CropHealth(
+        diseaseName: diseaseSuggestion.name ?? 'Desconocido',
+        diseaseProbability: diseaseSuggestion.probability ?? 0.0,
+        diseaseDescription: diseaseDescription,
+        treatment: treatment,
+        diseaseImageUrl: (diseaseSuggestion.similarImages != null && diseaseSuggestion.similarImages!.isNotEmpty)
+            ? diseaseSuggestion.similarImages!.first.url ?? ''
+            : '',
+      );
+    } catch (e, stackTrace) {
+      print('Exception in _mapToEntity: $e');
+      print('Stack trace: $stackTrace');
+      throw Exception('Error al procesar la respuesta de la API: $e');
     }
-
-    // Tomar la primera sugerencia de enfermedad y cultivo
-    final diseaseSuggestion = response.result.disease.suggestions.first;
-    final cropSuggestion = response.result.crop.suggestions.first;
-
-    // Obtener el tratamiento (concatenar los tratamientos disponibles)
-    String treatment = '';
-    if (diseaseSuggestion.details.treatment != null) {
-      final treatmentDetails = diseaseSuggestion.details.treatment!;
-      treatment += 'Prevención:\n${treatmentDetails.prevention.join('\n')}\n\n';
-      treatment +=
-          'Tratamiento Químico:\n${treatmentDetails.chemicalTreatment.join('\n')}\n\n';
-      treatment +=
-          'Tratamiento Biológico:\n${treatmentDetails.biologicalTreatment.join('\n')}';
-    }
-
-    return CropHealth(
-      status: response.status,
-      cropName: cropSuggestion.name,
-      diseaseName: diseaseSuggestion.name,
-      diseaseProbability: diseaseSuggestion.probability,
-      diseaseDescription: diseaseSuggestion.details.description ?? 'No disponible.',
-      treatment: treatment.isNotEmpty ? treatment : 'No disponible.',
-      diseaseImageUrl: diseaseSuggestion.similarImages.isNotEmpty
-          ? diseaseSuggestion.similarImages.first.url
-          : '',
-    );
   }
-  
+
 }

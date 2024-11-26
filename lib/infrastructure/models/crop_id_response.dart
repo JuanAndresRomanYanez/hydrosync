@@ -11,49 +11,50 @@ CropIdResponse cropIdResponseFromJson(String str) => CropIdResponse.fromJson(jso
 String cropIdResponseToJson(CropIdResponse data) => json.encode(data.toJson());
 
 class CropIdResponse {
-    String accessToken;
-    String modelVersion;
+    String? accessToken;
+    String? modelVersion;
     dynamic customId;
-    Input input;
-    Result result;
-    String status;
-    bool slaCompliantClient;
-    bool slaCompliantSystem;
-    double created;
-    double completed;
+    Input? input;
+    Result? result;
+    String? status;
+    bool? slaCompliantClient;
+    bool? slaCompliantSystem;
+    double? created;
+    double? completed;
 
     CropIdResponse({
-        required this.accessToken,
-        required this.modelVersion,
-        required this.customId,
-        required this.input,
-        required this.result,
-        required this.status,
-        required this.slaCompliantClient,
-        required this.slaCompliantSystem,
-        required this.created,
-        required this.completed,
+      this.accessToken,
+      this.modelVersion,
+      this.customId,
+      this.input,
+      this.result,
+      this.status,
+      this.slaCompliantClient,
+      this.slaCompliantSystem,
+      this.created,
+      this.completed,
     });
 
     factory CropIdResponse.fromJson(Map<String, dynamic> json) => CropIdResponse(
-        accessToken: json["access_token"],
-        modelVersion: json["model_version"],
-        customId: json["custom_id"],
-        input: Input.fromJson(json["input"]),
-        result: Result.fromJson(json["result"]),
-        status: json["status"],
-        slaCompliantClient: json["sla_compliant_client"],
-        slaCompliantSystem: json["sla_compliant_system"],
-        created: json["created"]?.toDouble(),
-        completed: json["completed"]?.toDouble(),
+      accessToken: json["access_token"],
+      modelVersion: json["model_version"],
+      customId: json["custom_id"],
+      input: json["input"] != null ? Input.fromJson(json["input"]) : null,
+      result: json["result"] != null ? Result.fromJson(json["result"]) : null,
+      status: json["status"],
+      slaCompliantClient: json["sla_compliant_client"],
+      slaCompliantSystem: json["sla_compliant_system"],
+      created: json["created"]?.toDouble(),
+      completed: json["completed"]?.toDouble(),
     );
+
 
     Map<String, dynamic> toJson() => {
         "access_token": accessToken,
         "model_version": modelVersion,
         "custom_id": customId,
-        "input": input.toJson(),
-        "result": result.toJson(),
+        "input": input?.toJson(),
+        "result": result?.toJson(),
         "status": status,
         "sla_compliant_client": slaCompliantClient,
         "sla_compliant_system": slaCompliantSystem,
@@ -95,131 +96,177 @@ class Input {
 }
 
 class Result {
-    IsPlant isPlant;
-    Disease disease;
-    CropInfo crop;
+    IsPlant? isPlant;
+    Disease? disease;
+    CropInfo? crop;
 
     Result({
-        required this.isPlant,
-        required this.disease,
-        required this.crop,
+      this.isPlant,
+      this.disease,
+      this.crop,
     });
 
-    factory Result.fromJson(Map<String, dynamic> json) => Result(
-        isPlant: IsPlant.fromJson(json["is_plant"]),
-        disease: Disease.fromJson(json["disease"]),
-        crop: CropInfo.fromJson(json["crop"]),
-    );
+    factory Result.fromJson(Map<String, dynamic> json) {
+      IsPlant? isPlant;
+      Disease? disease;
+      CropInfo? crop;
+
+      try {
+        if (json["is_plant"] != null) {
+          isPlant = IsPlant.fromJson(json["is_plant"]);
+        }
+      } catch (e) {
+        print('Error al parsear isPlant: $e');
+      }
+
+      try {
+        if (json["disease"] != null) {
+          disease = Disease.fromJson(json["disease"]);
+        }
+      } catch (e) {
+        print('Error al parsear disease: $e');
+      }
+
+      try {
+        if (json["crop"] != null) {
+          crop = CropInfo.fromJson(json["crop"]);
+        }
+      } catch (e) {
+        print('Contenido de json["crop"]: ${jsonEncode(json["crop"])}');
+        print('Error al parsear crop: $e');
+      }
+
+      return Result(
+        isPlant: isPlant,
+        disease: disease,
+        crop: crop,
+      );
+    }
+
+    // factory Result.fromJson(Map<String, dynamic> json) => Result(
+    //   isPlant: json["is_plant"] != null ? IsPlant.fromJson(json["is_plant"]) : null,
+    //   disease: json["disease"] != null ? Disease.fromJson(json["disease"]) : null,
+    //   crop: json["crop"] != null ? CropInfo.fromJson(json["crop"]) : null,
+    // );
 
     Map<String, dynamic> toJson() => {
-        "is_plant": isPlant.toJson(),
-        "disease": disease.toJson(),
-        "crop": crop.toJson(),
+        "is_plant": isPlant?.toJson(),
+        "disease": disease?.toJson(),
+        "crop": crop?.toJson(),
     };
 }
 
 class CropInfo {
-    List<CropSuggestion> suggestions;
+    List<CropSuggestion>? suggestions;
 
     CropInfo({
-        required this.suggestions,
+        this.suggestions,
     });
 
     factory CropInfo.fromJson(Map<String, dynamic> json) => CropInfo(
-        suggestions: List<CropSuggestion>.from(json["suggestions"].map((x) => CropSuggestion.fromJson(x))),
+      suggestions: json["suggestions"] != null
+        ? List<CropSuggestion>.from(json["suggestions"].map((x) => CropSuggestion.fromJson(x)))
+        : [],
     );
 
     Map<String, dynamic> toJson() => {
-        "suggestions": List<dynamic>.from(suggestions.map((x) => x.toJson())),
+      "suggestions": List<dynamic>.from(suggestions!.map((x) => x.toJson())),
     };
 }
 
 class CropSuggestion {
-    String id;
-    String name;
-    double probability;
-    List<SimilarImage> similarImages;
-    PurpleDetails details;
-    String scientificName;
+    String? id;
+    String? name;
+    double? probability;
+    List<SimilarImage>? similarImages;
+    PurpleDetails? details;
+    String? scientificName;
 
     CropSuggestion({
-        required this.id,
-        required this.name,
-        required this.probability,
-        required this.similarImages,
-        required this.details,
-        required this.scientificName,
+        this.id,
+        this.name,
+        this.probability,
+        this.similarImages,
+        this.details,
+        this.scientificName,
     });
 
     factory CropSuggestion.fromJson(Map<String, dynamic> json) => CropSuggestion(
-        id: json["id"],
-        name: json["name"],
-        probability: json["probability"]?.toDouble(),
-        similarImages: List<SimilarImage>.from(json["similar_images"].map((x) => SimilarImage.fromJson(x))),
-        details: PurpleDetails.fromJson(json["details"]),
-        scientificName: json["scientific_name"],
+      id: json["id"],
+      name: json["name"],
+      probability: json["probability"]?.toDouble(),
+      similarImages: json["similar_images"] != null
+        ? List<SimilarImage>.from(json["similar_images"].map((x) => SimilarImage.fromJson(x)))
+        : [],
+      details: json["details"] != null ? PurpleDetails.fromJson(json["details"]) : null,
+      scientificName: json["scientific_name"],
     );
+
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "probability": probability,
-        "similar_images": List<dynamic>.from(similarImages.map((x) => x.toJson())),
-        "details": details.toJson(),
+        "similar_images": List<dynamic>.from(similarImages!.map((x) => x.toJson())),
+        "details": details?.toJson(),
         "scientific_name": scientificName,
     };
 }
 
 class PurpleDetails {
-    int gbifId;
-    Image image;
-    List<Image> images;
-    String language;
-    String entityId;
+    int? gbifId;
+    Image? image;
+    List<Image>? images;
+    String? language;
+    String? entityId;
 
     PurpleDetails({
-        required this.gbifId,
-        required this.image,
-        required this.images,
-        required this.language,
-        required this.entityId,
+      this.gbifId,
+      this.image,
+      this.images,
+      this.language,
+      this.entityId,
     });
 
     factory PurpleDetails.fromJson(Map<String, dynamic> json) => PurpleDetails(
-        gbifId: json["gbif_id"],
-        image: Image.fromJson(json["image"]),
-        images: List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
-        language: json["language"],
-        entityId: json["entity_id"],
+      gbifId: json["gbif_id"],
+      image: json["image"] != null ? Image.fromJson(json["image"]) : null,
+      images: json["images"] != null
+        ? List<Image>.from(json["images"].map((x) => Image.fromJson(x)))
+        : [],
+      language: json["language"],
+      entityId: json["entity_id"],
     );
 
     Map<String, dynamic> toJson() => {
         "gbif_id": gbifId,
-        "image": image.toJson(),
-        "images": List<dynamic>.from(images.map((x) => x.toJson())),
+        "image": image?.toJson(),
+        "images": List<dynamic>.from(images!.map((x) => x.toJson())),
         "language": language,
         "entity_id": entityId,
     };
 }
 
 class Image {
-    String value;
+    String? value;
     String? citation;
-    LicenseName licenseName;
-    String licenseUrl;
+    LicenseName? licenseName;
+    String? licenseUrl;
 
     Image({
-        required this.value,
-        required this.citation,
-        required this.licenseName,
-        required this.licenseUrl,
+      this.value,
+      this.citation,
+      this.licenseName,
+      this.licenseUrl,
     });
 
     factory Image.fromJson(Map<String, dynamic> json) => Image(
-        value: json["value"],
-        citation: json["citation"],
-        licenseName: licenseNameValues.map[json["license_name"]]!,
-        licenseUrl: json["license_url"],
+      value: json["value"],
+      citation: json["citation"],
+      licenseName: json["license_name"] != null
+        ? licenseNameValues.map[json["license_name"]]
+        : null,
+      licenseUrl: json["license_url"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -285,60 +332,65 @@ class SimilarImage {
 }
 
 class Disease {
-    List<DiseaseSuggestion> suggestions;
+    List<DiseaseSuggestion>? suggestions;
 
     Disease({
-        required this.suggestions,
+      this.suggestions,
     });
 
     factory Disease.fromJson(Map<String, dynamic> json) => Disease(
-        suggestions: List<DiseaseSuggestion>.from(json["suggestions"].map((x) => DiseaseSuggestion.fromJson(x))),
+      suggestions: json["suggestions"] != null
+        ? List<DiseaseSuggestion>.from(json["suggestions"].map((x) => DiseaseSuggestion.fromJson(x)))
+        : [],
     );
 
     Map<String, dynamic> toJson() => {
-        "suggestions": List<dynamic>.from(suggestions.map((x) => x.toJson())),
+        "suggestions": suggestions != null ? List<dynamic>.from(suggestions!.map((x) => x.toJson())) : [],
     };
+
 }
 
 class DiseaseSuggestion {
-    String id;
-    String name;
-    double probability;
-    List<SimilarImage> similarImages;
-    FluffyDetails details;
-    String scientificName;
+    String? id;
+    String? name;
+    double? probability;
+    List<SimilarImage>? similarImages;
+    FluffyDetails? details;
+    String? scientificName;
 
     DiseaseSuggestion({
-        required this.id,
-        required this.name,
-        required this.probability,
-        required this.similarImages,
-        required this.details,
-        required this.scientificName,
+        this.id,
+        this.name,
+        this.probability,
+        this.similarImages,
+        this.details,
+        this.scientificName,
     });
 
     factory DiseaseSuggestion.fromJson(Map<String, dynamic> json) => DiseaseSuggestion(
-        id: json["id"],
-        name: json["name"],
-        probability: json["probability"]?.toDouble(),
-        similarImages: List<SimilarImage>.from(json["similar_images"].map((x) => SimilarImage.fromJson(x))),
-        details: FluffyDetails.fromJson(json["details"]),
-        scientificName: json["scientific_name"],
+      id: json["id"],
+      name: json["name"],
+      probability: json["probability"]?.toDouble(),
+      similarImages: json["similar_images"] != null
+        ? List<SimilarImage>.from(json["similar_images"].map((x) => SimilarImage.fromJson(x)))
+        : [],
+      details: json["details"] != null ? FluffyDetails.fromJson(json["details"]) : null,
+      scientificName: json["scientific_name"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "probability": probability,
-        "similar_images": List<dynamic>.from(similarImages.map((x) => x.toJson())),
-        "details": details.toJson(),
+        "similar_images": List<dynamic>.from(similarImages!.map((x) => x.toJson())),
+        "details": details?.toJson(),
         "scientific_name": scientificName,
     };
 }
 
 class FluffyDetails {
     List<String>? commonNames;
-    String type;
+    String? type;
     Taxonomy? taxonomy;
     int? gbifId;
     String? eppoCode;
@@ -352,47 +404,47 @@ class FluffyDetails {
     String? severity;
     String? spreading;
     Treatment? treatment;
-    String language;
-    String entityId;
+    String? language;
+    String? entityId;
 
     FluffyDetails({
-        required this.commonNames,
-        required this.type,
-        required this.taxonomy,
-        required this.gbifId,
-        required this.eppoCode,
-        required this.eppoRegulationStatus,
-        required this.wikiUrl,
-        required this.wikiDescription,
-        required this.image,
-        required this.images,
-        required this.description,
-        required this.symptoms,
-        required this.severity,
-        required this.spreading,
-        required this.treatment,
-        required this.language,
-        required this.entityId,
+        this.commonNames,
+        this.type,
+        this.taxonomy,
+        this.gbifId,
+        this.eppoCode,
+        this.eppoRegulationStatus,
+        this.wikiUrl,
+        this.wikiDescription,
+        this.image,
+        this.images,
+        this.description,
+        this.symptoms,
+        this.severity,
+        this.spreading,
+        this.treatment,
+        this.language,
+        this.entityId,
     });
 
     factory FluffyDetails.fromJson(Map<String, dynamic> json) => FluffyDetails(
-        commonNames: json["common_names"] == null ? [] : List<String>.from(json["common_names"]!.map((x) => x)),
-        type: json["type"],
-        taxonomy: json["taxonomy"] == null ? null : Taxonomy.fromJson(json["taxonomy"]),
-        gbifId: json["gbif_id"],
-        eppoCode: json["eppo_code"],
-        eppoRegulationStatus: json["eppo_regulation_status"],
-        wikiUrl: json["wiki_url"],
-        wikiDescription: json["wiki_description"] == null ? null : Image.fromJson(json["wiki_description"]),
-        image: json["image"] == null ? null : Image.fromJson(json["image"]),
-        images: json["images"] == null ? [] : List<Image>.from(json["images"]!.map((x) => Image.fromJson(x))),
-        description: json["description"],
-        symptoms: json["symptoms"] == null ? null : Symptoms.fromJson(json["symptoms"]),
-        severity: json["severity"],
-        spreading: json["spreading"],
-        treatment: json["treatment"] == null ? null : Treatment.fromJson(json["treatment"]),
-        language: json["language"],
-        entityId: json["entity_id"],
+      commonNames: json["common_names"] == null ? null : List<String>.from(json["common_names"]),
+      type: json["type"],
+      taxonomy: json["taxonomy"] == null ? null : Taxonomy.fromJson(json["taxonomy"]),
+      gbifId: json["gbif_id"],
+      eppoCode: json["eppo_code"],
+      eppoRegulationStatus: json["eppo_regulation_status"],
+      wikiUrl: json["wiki_url"],
+      wikiDescription: json["wiki_description"] == null ? null : Image.fromJson(json["wiki_description"]),
+      image: json["image"] == null ? null : Image.fromJson(json["image"]),
+      images: json["images"] == null ? null : List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
+      description: json["description"],
+      symptoms: json["symptoms"] == null ? null : Symptoms.fromJson(json["symptoms"]),
+      severity: json["severity"],
+      spreading: json["spreading"],
+      treatment: json["treatment"] == null ? null : Treatment.fromJson(json["treatment"]),
+      language: json["language"],
+      entityId: json["entity_id"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -577,14 +629,14 @@ class Treatment {
 }
 
 class IsPlant {
-    double probability;
-    double threshold;
-    bool binary;
+    double? probability;
+    double? threshold;
+    bool? binary;
 
     IsPlant({
-        required this.probability,
-        required this.threshold,
-        required this.binary,
+      this.probability,
+      this.threshold,
+      this.binary,
     });
 
     factory IsPlant.fromJson(Map<String, dynamic> json) => IsPlant(

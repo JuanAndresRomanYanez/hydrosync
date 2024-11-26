@@ -133,8 +133,6 @@ class CropHealthView extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Cultivo: ${result.cropName}',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const Divider(),
             Text('Enfermedad: ${result.diseaseName}',
                 style: const TextStyle(fontSize: 18)),
