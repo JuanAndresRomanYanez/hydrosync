@@ -319,7 +319,8 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
   Future<void> _sharePdf() async {
     final pdfBytes = await _generatePdfBytes();
     // Compartir el PDF
-    await Printing.sharePdf(bytes: pdfBytes, filename: '${widget.result.diseaseName}.pdf');
+    String fileName = '${widget.result.diseaseName}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+    await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
   }
 
   Future<Uint8List> _generatePdfBytes() async {

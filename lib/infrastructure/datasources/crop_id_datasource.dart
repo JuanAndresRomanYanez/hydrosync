@@ -151,7 +151,7 @@ class CropIdDatasource extends CropHealthDatasource{
       }
 
       return CropHealth(
-        diseaseName: diseaseName.text,
+        diseaseName: diseaseName.text[0].toUpperCase() + diseaseName.text.substring(1),
         diseaseProbability: diseaseSuggestion.probability ?? 0.0,
         diseaseDescription: diseaseDescription.text,
         diseaseImageUrl: (diseaseSuggestion.similarImages != null &&
