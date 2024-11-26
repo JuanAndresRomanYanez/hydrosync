@@ -21,6 +21,7 @@ dependencies:
   http: ^1.2.2
   image_picker: ^1.1.2
   numberpicker: ^2.1.2
+  translator: ^1.0.3+1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

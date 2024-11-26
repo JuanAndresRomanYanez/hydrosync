@@ -27,21 +27,18 @@ class CropIdDatasource extends CropHealthDatasource{
   );
 
   @override
-  Future<CropHealth> analyzeImage(String imagePath) async{
-    print('analyzeImage llamado con imagePath: $imagePath');
+  Future<CropHealth> analyzeImage(String imagePath) async {
     try {
+      final imageFile = File(imagePath);
+
       // Verificar si el archivo existe
-      final fileExists = await File(imagePath).exists();
-      print('El archivo existe: $fileExists');
+      if (!await imageFile.exists()) {
+        throw Exception('El archivo de imagen no existe.');
+      }
 
-      // Leer la imagen como bytes
-      print('Intentando leer el archivo de imagen...');
-      final File imageFile = File(imagePath);
+      // Leer la imagen como bytes y codificar en base64
       final bytes = await imageFile.readAsBytes();
-      print('Archivo de imagen leído correctamente, tamaño: ${bytes.length} bytes');
-
       final base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
-      print('Imagen codificada en base64, longitud: ${base64Image.length} caracteres');
 
       // Crear el cuerpo de la solicitud JSON
       final data = {
@@ -51,109 +48,100 @@ class CropIdDatasource extends CropHealthDatasource{
         'similar_images': true,
       };
 
-      print('Realizando la solicitud POST...');
+      // Realizar la solicitud POST
       final response = await dio.post(
         '/api/v1/identification',
         data: data,
       );
 
-      print('Solicitud POST realizada, esperando respuesta...');
-
       // Verificar el estado de la respuesta
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Respuesta exitosa recibida');
-        // print('Datos de respuesta JSON completo: ${jsonEncode(response)}');
-        print('Datos de respuesta: ${response.data}');
         // Parsear la respuesta
         final cropIdResponse = CropIdResponse.fromJson(response.data);
-        print('LLega a parsearse correctamente');
+
         // Mapear el modelo a la entidad
         final cropHealth = _mapToEntity(cropIdResponse);
-        print('Accede aqui 1 token menos aghhhh');
 
         return cropHealth;
       } else {
-        print('Error en la solicitud: Código de estado ${response.statusCode}');
-        print('Detalles del error: ${response.data}');
-        throw Exception('Error en la solicitud: ${response.statusCode}');
+        throw Exception(
+            'Error en la solicitud: Código de estado ${response.statusCode}');
       }
     } on DioException catch (e) {
-      print('DioException atrapada: ${e.message}');
-      print('Detalles del error: ${e.response?.data}');
       throw Exception('Error en la solicitud: ${e.message}');
     } catch (e) {
-      print('Excepción atrapada en analyzeImage: $e');
       throw Exception('Error al analizar la imagen: $e');
     }
   }
 
   CropHealth _mapToEntity(CropIdResponse response) {
-    try {
-      // Verificar si 'result' es nulo
-      if (response.result == null) {
-        throw Exception('No se encontraron resultados en la respuesta.');
-      }
-
-      final result = response.result!;
-
-      // Verificar si 'disease' y 'crop' no son nulos
-      if (result.disease == null ) {
-        throw Exception('Información incompleta en la respuesta.');
-      }
-
-      // Verificar si hay sugerencias disponibles
-      if (result.disease!.suggestions == null || result.disease!.suggestions!.isEmpty) {
-        throw Exception('No se encontraron sugerencias para la imagen proporcionada.');
-      }
-
-      // Tomar la primera sugerencia de enfermedad y cultivo
-      final diseaseSuggestion = result.disease!.suggestions!.first;
-
-      // Manejar posibles nulls en diseaseSuggestion
-      if (diseaseSuggestion == null) {
-        throw Exception('No hay sugerencias de enfermedad disponibles.');
-      }
-
-      // Manejar posibles nulls en diseaseSuggestion.details
-      if (diseaseSuggestion.details == null) {
-        throw Exception('No hay detalles disponibles para la enfermedad detectada.');
-      }
-
-      // Obtener el tratamiento
-      String treatment = 'No disponible.';
-      if (diseaseSuggestion.details!.treatment != null) {
-        final treatmentDetails = diseaseSuggestion.details!.treatment!;
-        treatment = '';
-
-        if (treatmentDetails.prevention != null && treatmentDetails.prevention.isNotEmpty) {
-          treatment += 'Prevención:\n${treatmentDetails.prevention.join('\n')}\n\n';
-        }
-        if (treatmentDetails.chemicalTreatment != null && treatmentDetails.chemicalTreatment.isNotEmpty) {
-          treatment += 'Tratamiento Químico:\n${treatmentDetails.chemicalTreatment.join('\n')}\n\n';
-        }
-        if (treatmentDetails.biologicalTreatment != null && treatmentDetails.biologicalTreatment.isNotEmpty) {
-          treatment += 'Tratamiento Biológico:\n${treatmentDetails.biologicalTreatment.join('\n')}';
-        }
-      }
-
-      // Manejar posibles nulls en diseaseDescription
-      String diseaseDescription = diseaseSuggestion.details!.description ?? 'No disponible.';
-
-      // Construir la entidad CropHealth
-      return CropHealth(
-        diseaseName: diseaseSuggestion.name ?? 'Desconocido',
-        diseaseProbability: diseaseSuggestion.probability ?? 0.0,
-        diseaseDescription: diseaseDescription,
-        treatment: treatment,
-        diseaseImageUrl: (diseaseSuggestion.similarImages != null && diseaseSuggestion.similarImages!.isNotEmpty)
-            ? diseaseSuggestion.similarImages!.first.url ?? ''
-            : '',
-      );
-    } catch (e, stackTrace) {
-      print('Exception in _mapToEntity: $e');
-      print('Stack trace: $stackTrace');
-      throw Exception('Error al procesar la respuesta de la API: $e');
+    // Verificar si 'result' es nulo
+    if (response.result == null) {
+      throw Exception('No se encontraron resultados en la respuesta.');
     }
+
+    final result = response.result!;
+
+    // Verificar si 'disease' no es nulo y tiene sugerencias
+    if (result.disease == null ||
+        result.disease!.suggestions == null ||
+        result.disease!.suggestions!.isEmpty) {
+      throw Exception('No se encontraron sugerencias para la imagen proporcionada.');
+    }
+
+    // Tomar la primera sugerencia de enfermedad
+    final diseaseSuggestion = result.disease!.suggestions!.first;
+
+    // Manejar posibles nulls en diseaseSuggestion.details
+    if (diseaseSuggestion.details == null) {
+      throw Exception('No hay detalles disponibles para la enfermedad detectada.');
+    }
+
+    final diseaseDetails = diseaseSuggestion.details!;
+
+    // Obtener el tratamiento
+    String treatment = 'No disponible.';
+    if (diseaseDetails.treatment != null) {
+      final treatmentDetails = diseaseDetails.treatment!;
+      List<String> treatmentParts = [];
+
+      if (treatmentDetails.prevention != null && treatmentDetails.prevention!.isNotEmpty) {
+        treatmentParts.add('Prevención:\n${treatmentDetails.prevention!.join('\n')}');
+      }
+      if (treatmentDetails.chemicalTreatment != null &&
+          treatmentDetails.chemicalTreatment!.isNotEmpty) {
+        treatmentParts.add(
+            'Tratamiento Químico:\n${treatmentDetails.chemicalTreatment!.join('\n')}');
+      }
+      if (treatmentDetails.biologicalTreatment != null &&
+          treatmentDetails.biologicalTreatment!.isNotEmpty) {
+        treatmentParts.add(
+            'Tratamiento Biológico:\n${treatmentDetails.biologicalTreatment!.join('\n')}');
+      }
+
+      if (treatmentParts.isNotEmpty) {
+        treatment = treatmentParts.join('\n\n');
+      }
+    }
+
+    // Obtener la descripción de la enfermedad
+    String diseaseDescription = diseaseDetails.description ?? 'No disponible.';
+
+    // Obtener la URL de la imagen de referencia
+    String diseaseImageUrl = '';
+    if (diseaseSuggestion.similarImages != null &&
+        diseaseSuggestion.similarImages!.isNotEmpty) {
+      diseaseImageUrl = diseaseSuggestion.similarImages!.first.url ?? '';
+    }
+
+    // Construir la entidad CropHealth
+    return CropHealth(
+      diseaseName: diseaseSuggestion.name ?? 'Desconocido',
+      diseaseProbability: diseaseSuggestion.probability ?? 0.0,
+      diseaseDescription: diseaseDescription,
+      treatment: treatment,
+      diseaseImageUrl: diseaseImageUrl,
+    );
   }
 
 }
