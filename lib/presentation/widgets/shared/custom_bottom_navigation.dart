@@ -39,8 +39,8 @@ class CustomBottomNavigation extends StatelessWidget {
         ),
 
         BottomNavigationBarItem(
-          icon: Icon( Icons.bug_report ),
-          label: 'PLAGAS',
+          icon: Icon( Icons.health_and_safety ),
+          label: 'SALUD',
         ),
       ],
     );

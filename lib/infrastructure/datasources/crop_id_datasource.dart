@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:translator/translator.dart';
 import 'package:dio/dio.dart';
-import 'package:hydrosync/config/config.dart';
 
+import 'package:hydrosync/config/config.dart';
 import 'package:hydrosync/domain/datasources/crop_health_datasource.dart';
 import 'package:hydrosync/domain/entities/crop_health.dart';
 import 'package:hydrosync/infrastructure/models/crop_id_response.dart';
@@ -74,74 +75,98 @@ class CropIdDatasource extends CropHealthDatasource{
     }
   }
 
-  CropHealth _mapToEntity(CropIdResponse response) {
-    // Verificar si 'result' es nulo
-    if (response.result == null) {
-      throw Exception('No se encontraron resultados en la respuesta.');
-    }
-
-    final result = response.result!;
-
-    // Verificar si 'disease' no es nulo y tiene sugerencias
-    if (result.disease == null ||
-        result.disease!.suggestions == null ||
-        result.disease!.suggestions!.isEmpty) {
-      throw Exception('No se encontraron sugerencias para la imagen proporcionada.');
-    }
-
-    // Tomar la primera sugerencia de enfermedad
-    final diseaseSuggestion = result.disease!.suggestions!.first;
-
-    // Manejar posibles nulls en diseaseSuggestion.details
-    if (diseaseSuggestion.details == null) {
-      throw Exception('No hay detalles disponibles para la enfermedad detectada.');
-    }
-
-    final diseaseDetails = diseaseSuggestion.details!;
-
-    // Obtener el tratamiento
-    String treatment = 'No disponible.';
-    if (diseaseDetails.treatment != null) {
-      final treatmentDetails = diseaseDetails.treatment!;
-      List<String> treatmentParts = [];
-
-      if (treatmentDetails.prevention != null && treatmentDetails.prevention!.isNotEmpty) {
-        treatmentParts.add('Prevención:\n${treatmentDetails.prevention!.join('\n')}');
-      }
-      if (treatmentDetails.chemicalTreatment != null &&
-          treatmentDetails.chemicalTreatment!.isNotEmpty) {
-        treatmentParts.add(
-            'Tratamiento Químico:\n${treatmentDetails.chemicalTreatment!.join('\n')}');
-      }
-      if (treatmentDetails.biologicalTreatment != null &&
-          treatmentDetails.biologicalTreatment!.isNotEmpty) {
-        treatmentParts.add(
-            'Tratamiento Biológico:\n${treatmentDetails.biologicalTreatment!.join('\n')}');
+  Future<CropHealth> _mapToEntity(CropIdResponse response) async {
+    try {
+      if (response.result == null) {
+        throw Exception('No se encontraron resultados en la respuesta.');
       }
 
-      if (treatmentParts.isNotEmpty) {
-        treatment = treatmentParts.join('\n\n');
+      final result = response.result!;
+
+      if (result.disease == null) {
+        throw Exception('Información incompleta en la respuesta.');
       }
+
+      if (result.disease!.suggestions == null || result.disease!.suggestions!.isEmpty) {
+        throw Exception('No se encontraron sugerencias para la imagen proporcionada.');
+      }
+
+      final diseaseSuggestion = result.disease!.suggestions!.first;
+
+      if (diseaseSuggestion.details == null) {
+        throw Exception('No hay detalles disponibles para la enfermedad detectada.');
+      }
+
+      final translator = GoogleTranslator();
+
+      // Traducción de textos
+      final diseaseName = await translator.translate(
+        diseaseSuggestion.name ?? 'Desconocido',
+        from: 'en',
+        to: 'es',
+      );
+      final diseaseDescription = await translator.translate(
+        diseaseSuggestion.details!.description ?? 'No disponible.',
+        from: 'en',
+        to: 'es',
+      );
+
+      // Obtener los tratamientos
+      List<String>? prevention;
+      List<String>? chemicalTreatment;
+      List<String>? biologicalTreatment;
+
+      if (diseaseSuggestion.details!.treatment != null) {
+        final treatmentDetails = diseaseSuggestion.details!.treatment!;
+
+        if (treatmentDetails.prevention != null && treatmentDetails.prevention!.isNotEmpty) {
+          // Traducir la lista de prevención
+          prevention = await Future.wait(
+            treatmentDetails.prevention!.map((item) async {
+              final translation = await translator.translate(item, from: 'en', to: 'es');
+              return translation.text;
+            }),
+          );
+        }
+
+        if (treatmentDetails.chemicalTreatment != null && treatmentDetails.chemicalTreatment!.isNotEmpty) {
+          // Traducir la lista de tratamiento químico
+          chemicalTreatment = await Future.wait(
+            treatmentDetails.chemicalTreatment!.map((item) async {
+              final translation = await translator.translate(item, from: 'en', to: 'es');
+              return translation.text;
+            }),
+          );
+        }
+
+        if (treatmentDetails.biologicalTreatment != null && treatmentDetails.biologicalTreatment!.isNotEmpty) {
+          // Traducir la lista de tratamiento biológico
+          biologicalTreatment = await Future.wait(
+            treatmentDetails.biologicalTreatment!.map((item) async {
+              final translation = await translator.translate(item, from: 'en', to: 'es');
+              return translation.text;
+            }),
+          );
+        }
+      }
+
+      return CropHealth(
+        diseaseName: diseaseName.text,
+        diseaseProbability: diseaseSuggestion.probability ?? 0.0,
+        diseaseDescription: diseaseDescription.text,
+        diseaseImageUrl: (diseaseSuggestion.similarImages != null &&
+                diseaseSuggestion.similarImages!.isNotEmpty)
+            ? diseaseSuggestion.similarImages!.first.url ?? ''
+            : '',
+        prevention: prevention,
+        chemicalTreatment: chemicalTreatment,
+        biologicalTreatment: biologicalTreatment,
+      );
+    } catch (e, stackTrace) {
+      print('Exception in _mapToEntity: $e');
+      print('Stack trace: $stackTrace');
+      throw Exception('Error al procesar la respuesta de la API: $e');
     }
-
-    // Obtener la descripción de la enfermedad
-    String diseaseDescription = diseaseDetails.description ?? 'No disponible.';
-
-    // Obtener la URL de la imagen de referencia
-    String diseaseImageUrl = '';
-    if (diseaseSuggestion.similarImages != null &&
-        diseaseSuggestion.similarImages!.isNotEmpty) {
-      diseaseImageUrl = diseaseSuggestion.similarImages!.first.url ?? '';
-    }
-
-    // Construir la entidad CropHealth
-    return CropHealth(
-      diseaseName: diseaseSuggestion.name ?? 'Desconocido',
-      diseaseProbability: diseaseSuggestion.probability ?? 0.0,
-      diseaseDescription: diseaseDescription,
-      treatment: treatment,
-      diseaseImageUrl: diseaseImageUrl,
-    );
   }
 
 }

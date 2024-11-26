@@ -128,8 +128,8 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pests',
-              builder: (context, state) => CropHealthView(),
+              path: '/health',
+              builder: (context, state) => const CropHealthView(),
             ),
           ],
         ),
