@@ -21,6 +21,7 @@ dependencies:
   http: ^1.2.2
   image_picker: ^1.1.2
   numberpicker: ^2.1.2
+  path_provider: ^2.1.5
   pdf: ^3.11.1
   printing: ^5.13.4
   translator: ^1.0.3+1

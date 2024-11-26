@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
@@ -151,7 +153,6 @@ class CropHealthView extends ConsumerWidget {
 }
 
 
-
 class AnalysisResultPanel extends StatefulWidget {
   final CropHealth result;
 
@@ -195,81 +196,115 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: [
-        // Botón para exportar en PDF
-        Align(
-          alignment: Alignment.centerRight,
-          child: IconButton(
-            icon: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 30),
-            onPressed: _generatePdf,
-          ),
+        // Botones para descargar y compartir PDF
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _downloadPdf,
+              icon: const Icon(Icons.download, size: 24),
+              label: const Text('Descargar PDF'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[700],
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+            ),
+            const SizedBox(width: 16),
+            ElevatedButton.icon(
+              onPressed: _sharePdf,
+              icon: const Icon(Icons.share, size: 24),
+              label: const Text('Compartir PDF'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue[700],
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
         ),
+        const SizedBox(height: 16),
+        // Tarjeta con la información
         Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Nombre de la enfermedad
-                Text(
-                  'Problema de salud: ${widget.result.diseaseName}',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                // Probabilidad
-                Text(
-                  'Probabilidad: ${(widget.result.diseaseProbability * 100).toStringAsFixed(2)}%',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 16),
-                // Imagen de referencia
-                if (widget.result.diseaseImageUrl.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(widget.result.diseaseImageUrl),
-                  ),
-                const SizedBox(height: 16),
-                // Secciones plegables
-                ExpansionPanelList(
-                  expansionCallback: (index, isExpanded) {
-                    setState(() {
-                      sections[index].isExpanded = !sections[index].isExpanded;
-                    });
-                  },
-                  children: sections.map((section) {
-                    return ExpansionPanel(
-                      headerBuilder: (context, isExpanded) {
-                        return ListTile(
-                          title: Text(
-                            section.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        );
-                      },
-                      body: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(section.content),
-                      ),
-                      isExpanded: section.isExpanded,
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
+            child: _buildContent(),
           ),
         ),
       ],
     );
-
-
   }
 
-  Future<void> _generatePdf() async {
+  Widget _buildContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Nombre de la enfermedad
+        Text(
+          'Problema de salud: ${widget.result.diseaseName}',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        // Probabilidad
+        Text(
+          'Probabilidad: ${(widget.result.diseaseProbability * 100).toStringAsFixed(2)}%',
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 16),
+        // Imagen de referencia
+        if (widget.result.diseaseImageUrl.isNotEmpty)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(widget.result.diseaseImageUrl),
+          ),
+        const SizedBox(height: 16),
+        // Secciones plegables
+        ExpansionPanelList(
+          expansionCallback: (index, isExpanded) {
+            setState(() {
+              sections[index].isExpanded = !sections[index].isExpanded;
+            });
+          },
+          children: sections.map((section) {
+            return ExpansionPanel(
+              headerBuilder: (context, isExpanded) {
+                return ListTile(
+                  title: Text(
+                    section.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                );
+              },
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(section.content),
+              ),
+              isExpanded: section.isExpanded,
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _downloadPdf() async {
+    final pdfBytes = await _generatePdfBytes();
+    // Guardar el PDF en el dispositivo
+    await _savePdfLocally(pdfBytes);
+  }
+
+  Future<void> _sharePdf() async {
+    final pdfBytes = await _generatePdfBytes();
+    // Compartir el PDF
+    await Printing.sharePdf(bytes: pdfBytes, filename: 'resultado.pdf');
+  }
+
+  Future<Uint8List> _generatePdfBytes() async {
     final pdf = pw.Document();
 
     final image = widget.result.diseaseImageUrl.isNotEmpty
@@ -277,41 +312,45 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
         : null;
 
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                'Problema de salud: ${widget.result.diseaseName}',
-                style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+          return [
+            pw.Header(
+              level: 0,
+              child: pw.Text(
+                'Reporte de Salud del Cultivo',
+                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
               ),
-              pw.SizedBox(height: 10),
-              pw.Text(
-                'Probabilidad: ${(widget.result.diseaseProbability * 100).toStringAsFixed(2)}%',
-                style: const pw.TextStyle(fontSize: 16),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Problema de salud: ${widget.result.diseaseName}',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Probabilidad: ${(widget.result.diseaseProbability * 100).toStringAsFixed(2)}%',
+              style: const pw.TextStyle(fontSize: 16),
+            ),
+            pw.SizedBox(height: 10),
+            if (image != null)
+              pw.Center(
+                child: pw.Image(image, height: 200),
               ),
-              pw.SizedBox(height: 10),
-              if (image != null)
-                pw.Center(
-                  child: pw.Image(image, height: 200),
-                ),
-              pw.SizedBox(height: 10),
-              _buildPdfSection('Descripción', widget.result.diseaseDescription),
-              if (widget.result.prevention != null && widget.result.prevention!.isNotEmpty)
-                _buildPdfSection('Prevención', widget.result.prevention!.join('\n')),
-              if (widget.result.chemicalTreatment != null && widget.result.chemicalTreatment!.isNotEmpty)
-                _buildPdfSection('Tratamiento Químico', widget.result.chemicalTreatment!.join('\n')),
-              if (widget.result.biologicalTreatment != null && widget.result.biologicalTreatment!.isNotEmpty)
-                _buildPdfSection('Tratamiento Biológico', widget.result.biologicalTreatment!.join('\n')),
-            ],
-          );
+            pw.SizedBox(height: 10),
+            _buildPdfSection('Descripción', widget.result.diseaseDescription),
+            if (widget.result.prevention != null && widget.result.prevention!.isNotEmpty)
+              _buildPdfSection('Prevención', widget.result.prevention!.join('\n\n')),
+            if (widget.result.chemicalTreatment != null && widget.result.chemicalTreatment!.isNotEmpty)
+              _buildPdfSection('Tratamiento Químico', widget.result.chemicalTreatment!.join('\n\n')),
+            if (widget.result.biologicalTreatment != null && widget.result.biologicalTreatment!.isNotEmpty)
+              _buildPdfSection('Tratamiento Biológico', widget.result.biologicalTreatment!.join('\n\n')),
+          ];
         },
       ),
     );
 
-    // Compartir o imprimir el PDF
-    await Printing.sharePdf(bytes: await pdf.save(), filename: 'resultado.pdf');
+    return pdf.save();
   }
 
   pw.Widget _buildPdfSection(String title, String content) {
@@ -329,10 +368,24 @@ class AnalysisResultPanelState extends State<AnalysisResultPanel> {
     );
   }
 
+  Future<void> _savePdfLocally(Uint8List pdfBytes) async {
+    try {
+      final directory = await getExternalStorageDirectory();
+      final path = '${directory!.path}/resultado.pdf';
+
+      final file = File(path);
+      await file.writeAsBytes(pdfBytes);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('PDF guardado en: $path')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar el PDF: $e')),
+      );
+    }
+  }
 }
-
-
-
 
 class ExpandableSection {
   String title;
