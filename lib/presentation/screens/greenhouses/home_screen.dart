@@ -27,6 +27,14 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: Colors.green,
         actions: [
           IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              // Navegar a la pantalla de notificaciones
+              // context.push('/notifications');
+            },
+          ),
+
+          IconButton(
             icon: Icon( isDarkMode ? Icons.dark_mode_outlined : Icons.light_mode_outlined ),
             onPressed: (){
               ref.read(themeNotifierProvider.notifier)
