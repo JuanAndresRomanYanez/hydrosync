@@ -27,6 +27,7 @@ dependencies:
   numberpicker: ^2.1.2
   pdf: ^3.11.1
   printing: ^5.13.4
+  shared_preferences: ^2.3.3
   translator: ^1.0.3+1
 
 dev_dependencies:

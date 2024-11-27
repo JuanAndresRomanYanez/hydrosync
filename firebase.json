@@ -1,1 +1,41 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"iot-hidroponia-6a32a","appId":"1:316511574032:android:e97772bf0c9a36f9741295","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"iot-hidroponia-6a32a","configurations":{"android":"1:316511574032:android:e97772bf0c9a36f9741295","ios":"1:316511574032:ios:f466690dabb7ac60741295","macos":"1:316511574032:ios:f466690dabb7ac60741295","web":"1:316511574032:web:e051ab687697dfeb741295","windows":"1:316511574032:web:554f06778f9e2b0d741295"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "iot-hidroponia-6a32a",
+          "appId": "1:316511574032:android:e97772bf0c9a36f9741295",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "iot-hidroponia-6a32a",
+          "configurations": {
+            "android": "1:316511574032:android:e97772bf0c9a36f9741295",
+            "ios": "1:316511574032:ios:f466690dabb7ac60741295",
+            "macos": "1:316511574032:ios:f466690dabb7ac60741295",
+            "web": "1:316511574032:web:e051ab687697dfeb741295",
+            "windows": "1:316511574032:web:554f06778f9e2b0d741295"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}
